@@ -8,7 +8,15 @@
 ## yahoo_answers
 ## yelp_review_full
 ## yelp_review_polarity -->
+# Attack-Prone Feature Experiment
 For each dataset, I randomly trained on 1000 sentences in the train set and randomly tested on 100 sentences in the test set. Then I randomly selected 100 sentences in the test set to attack the model with the PWWS attacker.
+## Traning Configuration
+|       Batch Size       |  32  |
+|:----------------------:|:----:|
+| Number of tran samples | 1000 |
+| Number of test samples |  100 |
+|         Epoches        |  100 |
+|      Learning rate     | 5e-4 |
 # Character CNN
 ## ag_news
 |                  Summary|                   |
@@ -98,6 +106,7 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 | Avg. Word Modif. Rate:          | 0.14237  |
 ## yelp_review_polarity
 |                  Summary|                   |
+| ------ | ------ |
 | Total Attacked Instances:       | 100      |
 | Successful Instances:           | 38       |
 | Attack Success Rate:            | 0.38     |
