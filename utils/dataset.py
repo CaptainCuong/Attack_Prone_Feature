@@ -3,15 +3,12 @@ import pandas as pd
 def load_dataset(args):
     if args.dataset == 'imdb':
         import datasets
-        train_data, test_data = datasets.load_dataset(args.dataset, split =[f'train[:{args.limit_train}]', f'test[{args.limit_test}:]'])
+        train_data, test_data = datasets.load_dataset(args.dataset, split =['train','test'])
         if args.train_eval == 'train':
-            return pd.DataFrame({'text':train_data['text'], 
-                                 'label':train_data['label']}),\
-                   pd.DataFrame({'text':test_data['text'], 
-                                 'label':test_data['label']})
-        else:
-            return pd.DataFrame({'text':test_data['text'], 
-                                 'label':test_data['label']})
+            df_train = pd.DataFrame({'text':train_data['text'], 
+                                     'label':train_data['label']})
+        df_test = pd.DataFrame({'text':test_data['text'], 
+                                'label':test_data['label']})
     elif args.dataset == 'ag_news':
         names = ['label','text','description'] if args.model in ['lstm','bilstm','rnn','birnn'] \
            else ['label','title','text']

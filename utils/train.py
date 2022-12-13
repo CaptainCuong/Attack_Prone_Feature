@@ -65,6 +65,7 @@ def train_epoch(args, model, train_loader, test_loader, optimizer, loss_func):
     return los_train_avg, loss_test_avg
 
 def evaluate(args,test_loader,model):
+    model = model.to(args.device)
     true_label = torch.tensor([])
     pred_label = torch.tensor([])
     for data, label in tqdm(test_loader, total=len(test_loader)):
