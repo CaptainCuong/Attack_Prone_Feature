@@ -79,7 +79,7 @@ def train_huggingface(args, model, train_data, test_data):
     def compute_metrics(pred):
         labels = pred.label_ids
         preds = pred.predictions.argmax(-1)
-        precision, recall, f1, _ = precision_recall_fscore_support(labels, preds)
+        precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='micro')
         acc = accuracy_score(labels, preds)
         return {
             'accuracy': acc,
@@ -93,11 +93,11 @@ def train_huggingface(args, model, train_data, test_data):
         num_train_epochs=args.epoches,
         per_device_train_batch_size = args.batch_size,    
         per_device_eval_batch_size= args.batch_size,
-        evaluation_strategy = "epoch",
+        evaluation_strategy = "steps",
+        save_strategy = "steps",
         disable_tqdm = False, 
         warmup_steps=500,
         weight_decay=0.01,
-        logging_steps = 10,
         fp16 = True,
         logging_dir=args.load_dir,
         dataloader_pin_memory=False,

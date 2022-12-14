@@ -15,7 +15,7 @@ class MyClassifier(OpenAttack.Classifier):
         #     return ret
 
         def get_pred(self, input_):
-            if self.model_name in ['roberta-base','berta-base']:
+            if self.model_name in ['roberta-base','bert-base']:
                 input_sent = self.tokenizer(input_, padding = 'max_length', truncation=True, return_tensors='pt')
                 input_sent = {key:value.to(self.device) for key, value in input_sent.items()}
                 res = self.model(**input_sent).logits.argmax(axis=1)
@@ -32,7 +32,7 @@ class MyClassifier(OpenAttack.Classifier):
         def get_prob(self, input_):
             ret = []
             for sent in input_:
-                if self.model_name in ['roberta-base','berta-base']:
+                if self.model_name in ['roberta-base','bert-base']:
                     input_sent = self.tokenizer(sent, padding = 'max_length', truncation=True, return_tensors='pt')
                     input_sent = {key:value.to(self.device) for key, value in input_sent.items()}
                     res = self.model(**input_sent).logits

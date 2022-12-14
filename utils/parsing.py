@@ -8,11 +8,11 @@ def parse_train_args():
     parser.add_argument('--log_dir', type=str, default='./test_run', help='Folder in which to save model and logs')
     parser.add_argument('--limit_train', type=int, default=1000, help='Number of samples for training set')
     parser.add_argument('--limit_test', type=int, default=100, help='Number of samples for testing set')
-    parser.add_argument('--dataset', type=str, default='imdb', 
+    parser.add_argument('--dataset', type=str, default='dbpedia', 
                                                choices=['ag_news','amazon_review_full','amazon_review_polarity',
                                                         'dbpedia','imdb','sogou_news','yahoo_answers',
                                                         'yelp_review_full','yelp_review_polarity'])
-    parser.add_argument('--model', type=str, default='char_cnn', 
+    parser.add_argument('--model', type=str, default='bert-base', 
                                    help='Model for training or evaluation',
                                    choices=['roberta-base','char_cnn','word_cnn',
                                             'bert-base','bilstm','lstm',
@@ -20,8 +20,8 @@ def parse_train_args():
     parser.add_argument('--max_length', type=int, default=512, help='Folder in which to save model and logs')
     
     # Training arguments
-    parser.add_argument('--batch_size', type=int, default=32, help='batch_size for training')    
-    parser.add_argument('--epoches', type=int, default=100, help='batch_size for training')
+    parser.add_argument('--batch_size', type=int, default=5, help='batch_size for training')    
+    parser.add_argument('--epoches', type=int, default=10, help='batch_size for training')
     parser.add_argument('--learning_rate', type=float, default=5e-4, help='Initial learning rate')    
     
     # Configuration of character-level CNN
@@ -94,11 +94,16 @@ def check_constraint(args):
             raise Exception('Max length should be 10')
         elif args.dataset not in ['ag_news','amazon_review_full','amazon_review_polarity',
                                   'dbpedia','sogou_news','yahoo_answers']:
-            raise Exception('Choose wrong dataset')
-        elif args.epoches < 100:
+            raise Exception('Choose wrong dataset\nDataset should be in [ag_news,amazon_review_full,amazon_review_polarity,dbpedia,sogou_news,yahoo_answers]')
+        elif args.epoches <= 100:
             raise Exception('Epoches should be greater than 100')
         elif args.learning_rate > 5e-4:
             raise Exception('Learning rate should lower than 5e-4')
     else:
         if args.max_length != 512:
             raise Exception('Wrong max length, should be 512')
+    if args.model in ['roberta-base','bert-base']:
+        if args.batch_size > 5:
+            raise Exception('Out of memory warning')
+        if args.epoches > 15:
+            raise Exception('Epoches should be lower than or equal 15')
