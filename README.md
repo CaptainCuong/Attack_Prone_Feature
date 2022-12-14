@@ -16,14 +16,26 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 
 
 # Character CNN
-## Traning Configuration
+<!-- ## Traning Configuration
 |       Batch Size       |        32        |
 |:----------------------:|:----------------:|
 | Number of tran samples | 1000             |
 | Number of test samples |        100       |
 |         Epoches        |        100       |
 |      Learning rate     |       5e-4       |
-| Sentence Length        | 1024 (character) |
+| Sentence Length        | 1024 (character) | -->
+## Summarizing Results
+| **METRICS\DATASET**                | **ag_news** | **amazon_review_full** | **amazon_review_polarity** | **dbpedia** | **sogou_news** | **yahoo_answers** | **yelp_review_full** | **yelp_review_polarity** |
+|:----------------------------------:|:-----------:|:----------------------:|:--------------------------:|:-----------:|:--------------:|:-----------------:|:--------------------:|:------------------------:|
+| **Attack Success Rate**            | 0.63        | 0.86                   | 0.5                        | 0.93        | X              | 0.72              | 0.71                 | 0.38                     |
+| **Avg. Running Time**              | 0.035337    | 0.046623               | 0.038393                   | 0.028483    | X              | 0.027664          | 0.073046             | 0.093736                 |
+| **Avg. Victim Model Queries**      | 196.18      | 517.5                  | 489.46                     | 250.29      | X              | 272.14            | 1062.2               | 929.41                   |
+| **Avg. Fluency**                   | 331.27      | 117.08                 | 116.68                     | 161.87      | X              | 2370.7            | 133.65               | 171.14                   |
+| **Avg. Grammatical Errors**        | 10.73       | 19.849                 | 23.12                      | 15.398      | X              | 11.528            | 37.887               | 27.737                   |
+| **Avg. Semantic Similarity**       | 0.89976     | 0.95675                | 0.95378                    | 0.9616      | X              | 0.89899           | 0.96549              | 0.92452                  |
+| **Avg. Levenshtein Edit Distance** | 9.1111      | 12.163                 | 14.94                      | 17.065      | X              | 6.9306            | 20.873               | 16.684                   |
+| **Avg. Word Modif. Rate**          | 0.24188     | 0.16075                | 0.20819                    | 0.31076     | X              | 0.18228           | 0.14237              | 0.14807                  |
+
 ## ag_news
 |                  Summary|                   |
 | ------ | ------ |
@@ -124,6 +136,18 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 | Avg. Levenshtein Edit Distance: | 16.684   |
 | Avg. Word Modif. Rate:          | 0.14807  |
 # Word CNN
+## Summarizing Results
+| **METRICS\DATASET**                | **ag_news** | **amazon_review_full** | **amazon_review_polarity** | **dbpedia** | **sogou_news** | **yahoo_answers** | **yelp_review_full** | **yelp_review_polarity** |
+|:----------------------------------:|:-----------:|:----------------------:|:--------------------------:|:-----------:|:--------------:|:-----------------:|:--------------------:|:------------------------:|
+| **Attack Success Rate**            | 0.67        | 0.8                    | 0.43                       | 0.67        | X              | 0.72              | 0.81                 | 0.7                      |
+| **Avg. Running Time**              | 0.01234     | 0.024652               | 0.025495                   | 0.013617    | X              | 0.027664          | 0.013024             | 0.064513                 |
+| **Avg. Victim Model Queries**      | 187.12      | 512.63                 | 499.65                     | 241.65      | X              | 272.14            | 217.63               | 1074.8                   |
+| **Avg. Fluency**                   | 340.4       | 115.04                 | 144.82                     | 174.33      | X              | 2370.7            | 822.04               | 94.452                   |
+| **Avg. Grammatical Errors**        | 7.3582      | 19.325                 | 19.767                     | 16.478      | X              | 11.528            | 8.2222               | 32.614                   |
+| **Avg. Semantic Similarity**       | 0.94288     | 0.95634                | 0.93881                    | 0.9458      | X              | 0.89899           | 0.86665              | 0.96492                  |
+| **Avg. Levenshtein Edit Distance** | 7.9701      | 11.363                 | 12.535                     | 18.149      | X              | 6.9306            | 4.6173               | 17.2                     |
+| **Avg. Word Modif. Rate**          | 0.244       | 0.14546                | 0.16122                    | 0.32841     | X              | 0.18228           | 0.17336              | 0.12796                  |
+
 ## ag_news
 |                  Summary|                  |
 | ------ | ------ |
@@ -211,6 +235,17 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 | Avg. Levenshtein Edit Distance: | 17.2     |
 | Avg. Word Modif. Rate:          | 0.12796  |
 # Bert-base
+## Summarizing Results
+| **METRICS\DATASET**                | **ag_news** | **amazon_review_full** | **amazon_review_polarity** | **dbpedia** | **sogou_news** | **yahoo_answers** | **yelp_review_full** | **yelp_review_polarity** |
+|:----------------------------------:|:-----------:|:----------------------:|:--------------------------:|:-----------:|:--------------:|:-----------------:|:--------------------:|:------------------------:|
+| **Attack Success Rate**            | 0.82        | 0.88                   | 0.12                       | 0           | X              | 0.46              | 0.43                 | 0.37                     |
+| **Avg. Running Time**              | 0.0612      | 0.088293               | 0.31382                    | 0.23207     | X              | 0.09895           | 0.39631              | 0.59489                  |
+| **Avg. Victim Model Queries**      | 183.42      | 523.1                  | 581.08                     | 237.29      | X              | 244.12            | 943.95               | 1123.8                   |
+| **Avg. Fluency**                   | 492.2       | 178.6                  | 121.99                     | X           | X              | 1095.9            | 274.61               | 265.19                   |
+| **Avg. Grammatical Errors**        | 9.0976      | 20.114                 | 23.583                     | X           | X              | 10.217            | 29.326               | 16.73                    |
+| **Avg. Semantic Similarity**       | 0.89378     | 0.90382                | 0.92965                    | X           | X              | 0.79672           | 0.8389               | 0.88568                  |
+| **Avg. Levenshtein Edit Distance** | 10.293      | 14.739                 | 18.917                     | X           | X              | 6.9783            | 28.907               | 15.622                   |
+| **Avg. Word Modif. Rate**          | 0.30092     | 0.26033                | 0.20811                    | X           | X              | 0.25843           | 0.30585              | 0.21581                  |
 ## ag_news
 |                  Summary|                  |
 | ------ | ------ |
@@ -306,6 +341,18 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 | Avg. Levenshtein Edit Distance: | 15.622  |
 | Avg. Word Modif. Rate:          | 0.21581 |
 # Roberta-base
+## Summarizing Results
+| **METRICS\DATASET**                | **ag_news** | **amazon_review_full** | **amazon_review_polarity** | **dbpedia** | **sogou_news** | **yahoo_answers** | **yelp_review_full** | **yelp_review_polarity** |
+|:----------------------------------:|:-----------:|:----------------------:|:--------------------------:|:-----------:|:--------------:|:-----------------:|:--------------------:|:------------------------:|
+| **Attack Success Rate**            | 0.03        | 0.01                   | 0                          | 0.02        | 0              | 0.31              | 0.31                 | 0.22                     |
+| **Avg. Running Time**              | 0.17399     | 0.30209                | 0.33149                    | 0.20821     | 2.8389         | 0.10891           | 0.38577              | 0.4549                   |
+| **Avg. Victim Model Queries**      | 214.7       | 558.37                 | 624.26                     | 248.63      | 1045.1         | 325.3             | 1138.2               | 984.76                   |
+| **Avg. Fluency**                   | 481.11      | 86.099                 | X                          | 190.8       | X              | 220.26            | 126.79               | 215.4                    |
+| **Avg. Grammatical Errors**        | 7.3333      | 27                     | X                          | 5.5         | X              | 25.226            | 62.452               | 32.591                   |
+| **Avg. Semantic Similarity**       | 0.89451     | 0.93297                | X                          | 0.92398     | X              | 0.82606           | 0.90426              | 0.8901                   |
+| **Avg. Levenshtein Edit Distance** | 8.3333      | 27                     | X                          | 3.5         | X              | 20.581            | 51.742               | 27.773                   |
+| **Avg. Word Modif. Rate**          | 0.54254     | 0.75325                | X                          | 0.20238     | X              | 0.27474           | 0.4104               | 0.52619                  |
+
 ## ag_news
 |                  Summary|                  |
 | ------ | ------ |
@@ -417,6 +464,18 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 |         Epoches        |  150 |
 |      Learning rate     | 5e-4 |
 | Sentence Length        | 10   |
+## Summarizing Results
+| **METRICS\DATASET**                | **ag_news** | **amazon_review_full** | **amazon_review_polarity** | **dbpedia** | **sogou_news** | **yahoo_answers** | **yelp_review_full** | **yelp_review_polarity** |
+|:----------------------------------:|:-----------:|:----------------------:|:--------------------------:|:-----------:|:--------------:|:-----------------:|:--------------------:|:------------------------:|
+| **Attack Success Rate**            | 0.87        | 0.62                   | 0.57                       | 0.81        | 0.13           | 0.91              | X                    | X                        |
+| **Avg. Running Time**              | 0.0072137   | 0.0085613              | 0.0074409                  | 0.0076351   | 0.014523       | 0.010651          | X                    | X                        |
+| **Avg. Victim Model Queries**      | 48.54       | 37.04                  | 36.99                      | 16.5        | 29             | 77.03             | X                    | X                        |
+| **Avg. Fluency**                   | 16284       | 5983.8                 | 8623.7                     | 7071.9      | 314.49         | 2241.4            | X                    | X                        |
+| **Avg. Grammatical Errors**        | 2.2529      | 1.371                  | 1.3684                     | 2.0741      | 6.8462         | 2.7143            | X                    | X                        |
+| **Avg. Semantic Similarity**       | 0.83014     | 0.71345                | 0.69062                    | 0.77779     | 0.95363        | 0.84422           | X                    | X                        |
+| **Avg. Levenshtein Edit Distance** | 4.1724      | 2.5968                 | 2.7368                     | 2.7407      | 0.46154        | 3.0879            | X                    | X                        |
+| **Avg. Word Modif. Rate**          | 0.60395     | 0.68857                | 0.62544                    | 0.834       | 0.054654       | 0.2868            | X                    | X                        |
+
 ## ag_news
 |                   Summary|                   |
 | ------ | ------ |
@@ -502,6 +561,17 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 | Avg. Levenshtein Edit Distance: | 3.0879   |
 | Avg. Word Modif. Rate:          | 0.2868   |
 # LSTM
+## Summarizing Results
+| **METRICS\DATASET**                | **ag_news** | **amazon_review_full** | **amazon_review_polarity** | **dbpedia** | **sogou_news** | **yahoo_answers** | **yelp_review_full** | **yelp_review_polarity** |
+|:----------------------------------:|:-----------:|:----------------------:|:--------------------------:|:-----------:|:--------------:|:-----------------:|:--------------------:|:------------------------:|
+| **Attack Success Rate**            | 0.65        | 0.75                   | 0.7                        | 0.84        | 0.2            | 0.68              | X                    | X                        |
+| **Avg. Running Time**              | 0.0086237   | 0.0085722              | 0.010094                   | 0.006229    | 0.012125       | 0.0079263         | X                    | X                        |
+| **Avg. Victim Model Queries**      | 51.75       | 37.04                  | 36.79                      | 16.59       | 28.66          | 73.13             | X                    | X                        |
+| **Avg. Fluency**                   | 4305.2      | 26716                  | 7755.1                     | 20182       | 164.88         | 2978.7            | X                    | X                        |
+| **Avg. Grammatical Errors**        | 2.6615      | 1.72                   | 1.4857                     | 1.9048      | 9              | 3.0588            | X                    | X                        |
+| **Avg. Semantic Similarity**       | 0.8055      | 0.67169                | 0.68932                    | 0.76734     | 0.9367         | 0.82857           | X                    | X                        |
+| **Avg. Levenshtein Edit Distance** | 5.1692      | 2.6533                 | 2.5429                     | 2.7381      | 0.4            | 3.2794            | X                    | X                        |
+| **Avg. Word Modif. Rate**          | 0.66454     | 0.57327                | 0.66905                    | 0.84702     | 0.044097       | 0.30678           | X                    | X                        |
 ## ag_news
 |                   Summary|                   |
 | ------ | ------ |
@@ -587,6 +657,16 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 | Avg. Levenshtein Edit Distance: | 3.2794    |
 | Avg. Word Modif. Rate:          | 0.30678   |
 # RNN
+| **METRICS\DATASET**                | **ag_news** | **amazon_review_full** | **amazon_review_polarity** | **dbpedia** | **sogou_news** | **yahoo_answers** | **yelp_review_full** | **yelp_review_polarity** |
+|:----------------------------------:|:-----------:|:----------------------:|:--------------------------:|:-----------:|:--------------:|:-----------------:|:--------------------:|:------------------------:|
+| **Attack Success Rate**            | 0.73        | 0.77                   | 0.68                       | 0.79        | 0.44           | 0.89              | X                    | X                        |
+| **Avg. Running Time**              | 0.0061613   | 0.0048711              | 0.0064955                  | 0.005091    | 0.0059475      | 0.0086533         | X                    | X                        |
+| **Avg. Victim Model Queries**      | 48.94       | 40.3                   | 35.06                      | 12.76       | 23.27          | 75.02             | X                    | X                        |
+| **Avg. Fluency**                   | 12848       | 13399                  | nan                        | 13204       | 156.9          | 2533.3            | X                    | X                        |
+| **Avg. Grammatical Errors**        | 2.3836      | 1.6104                 | 1.4853                     | 2.2658      | 9.5            | 2.7191            | X                    | X                        |
+| **Avg. Semantic Similarity**       | 0.81213     | 0.7122                 | 0.71555                    | 0.83975     | 0.98492        | 0.8352            | X                    | X                        |
+| **Avg. Levenshtein Edit Distance** | 4.8767      | 2.5974                 | 2.6618                     | 2.5063      | 0.22727        | 2.7079            | X                    | X                        |
+| **Avg. Word Modif. Rate**          | 0.65107     | 0.5635                 | 0.6161                     | 0.82188     | 0.026962       | 0.29397           | X                    | X                        |
 ## ag_news
 |                   Summary|                   |
 | ------ | ------ |
@@ -672,6 +752,17 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 | Avg. Levenshtein Edit Distance: | 2.7079    |
 | Avg. Word Modif. Rate:          | 0.29397   |
 # BiRNN
+## Summarizing Results
+| **METRICS\DATASET**                | **ag_news** | **amazon_review_full** | **amazon_review_polarity** | **dbpedia** | **sogou_news** | **yahoo_answers** | **yelp_review_full** | **yelp_review_polarity** |
+|:----------------------------------:|:-----------:|:----------------------:|:--------------------------:|:-----------:|:--------------:|:-----------------:|:--------------------:|:------------------------:|
+| **Attack Success Rate**            | 0.86        | 0.83                   | 0.72                       | 0.83        | 0.28           | 0.87              | X                    | X                        |
+| **Avg. Running Time**              | 0.0074141   | 0.007181               | 0.0078038                  | 0.005928    | 0.010882       | 0.0071098         | X                    | X                        |
+| **Avg. Victim Model Queries**      | 46.99       | 37.37                  | 37.64                      | 14.86       | 27.47          | 76.02             | X                    | X                        |
+| **Avg. Fluency**                   | 7828.8      | 3425.7                 | 24251                      | 10966       | 164.79         | 2091.3            | X                    | X                        |
+| **Avg. Grammatical Errors**        | 2.3837      | 1.7349                 | 1.7361                     | 2.0843      | 8.1786         | 2.7471            | X                    | X                        |
+| **Avg. Semantic Similarity**       | 0.8273      | 0.70067                | 0.73189                    | 0.78597     | 0.94816        | 0.82827           | X                    | X                        |
+| **Avg. Levenshtein Edit Distance** | 4.5233      | 2.4337                 | 2.6806                     | 2.4819      | 0.53571        | 2.6897            | X                    | X                        |
+| **Avg. Word Modif. Rate**          | 0.63394     | 0.50821                | 0.61892                    | 0.80459     | 0.041106       | 0.3032            | X                    | X                        |
 ## ag_news
 |                   Summary|                   |
 | ------ | ------ |
