@@ -1,5 +1,20 @@
 # Attack-Prone Feature Experiment
 For each dataset, I randomly trained on 1000 sentences in the train set and randomly tested on 100 sentences in the test set. Then I randomly selected 100 sentences in the test set to attack the model with the PWWS attacker.
+# Results Overview
+
+## Attack Success Rate
+| MODEL\DATASET | ag_news | amazon_review_full | amazon_review_polarity | dbpedia | sogou_news | yahoo_answers | yelp_review_full | yelp_review_polarity |
+|---------------|---------|--------------------|------------------------|---------|------------|---------------|------------------|----------------------|
+| Character CNN | 0.63    | 0.86               | 0.5                    | 0.93    | X          | 0.72          | 0.71             | 0.38                 |
+| Word CNN      | 0.67    | 0.8                | 0.43                   | 0.67    | X          | 0.81          | X                | 0.7                  |
+| Bert-base     | 0.82    | 0.88               | 0.12                   | 0       | X          | 0.46          | 0.43             | 0.37                 |
+| Roberta-base  | 0.03    | 0.01               | 0                      | 0.02    | 0          | 0.31          | 0.31             | 0.22                 |
+| BiLSTM        | 0.87    | 0.62               | 0.57                   | 0.81    | 0.13       | 0.91          | X                | X                    |
+| LSTM          | 0.65    | 0.75               | 0.7                    | 0.84    | 0.2        | 0.68          | X                | X                    |
+| RNN           | 0.73    | 0.77               | 0.68                   | 0.79    | 0.44       | 0.89          | X                | X                    |
+| BiRNN         | 0.86    | 0.83               | 0.72                   | 0.83    | 0.28       | 0.87          | X                | X                    |
+
+
 # Character CNN
 ## Traning Configuration
 |       Batch Size       |        32        |
@@ -165,7 +180,6 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 | Avg. Semantic Similarity:       | 0.9458   |
 | Avg. Levenshtein Edit Distance: | 18.149   |
 | Avg. Word Modif. Rate:          | 0.32841  |
-## imdb
 ## sogou_news
 ## yahoo_answers
 |                  Summary|                   |
@@ -248,7 +262,6 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 | Avg. Running Time:         | 0.23207 |
 | Total Query Exceeded:      | 0       |
 | Avg. Victim Model Queries: | 237.29  |
-## imdb
 ## sogou_news
 ## yahoo_answers
 |                  Summary|                  |
