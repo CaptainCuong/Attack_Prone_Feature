@@ -59,3 +59,4 @@ def load_dataset(args):
                df_test[['label','text']][df_test.notnull().all(1)].sample(frac=1).iloc[:args.limit_test].reset_index(drop=True)
     else:
         return df_test[['label','text']][df_test.notnull().all(1)].sample(frac=1).iloc[:args.limit_test].reset_index(drop=True)
+        # return df_test[['label','text']][df_test.notnull().all(1)].iloc[:args.limit_test].reset_index(drop=True)

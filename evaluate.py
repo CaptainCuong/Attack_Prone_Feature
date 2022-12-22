@@ -4,7 +4,8 @@ import torch
 import OpenAttack
 from contextlib import contextmanager
 import pathlib
-
+import os
+import pandas as pd
 @contextmanager
 def no_ssl_verify():
     import ssl
@@ -20,7 +21,9 @@ args = parse_train_args()
 args.device = 'cuda'if torch.cuda.is_available() else 'cpu'
 args.train_eval = 'eval'
 if __name__ == '__main__':
-    test_data = load_dataset(args)
+    dataset_dir = os.path.join(os.getcwd(),'datasets',args.dataset)
+    test_data = pd.read_csv(dataset_dir+f'/process_test_{args.dataset_size}.csv', index_col=False)
+    # test_data = load_dataset(args)
     model, tokenizer = get_model(args)
     
     if args.model in ['roberta-base','bert-base']:

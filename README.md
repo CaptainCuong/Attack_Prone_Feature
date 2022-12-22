@@ -1,5 +1,30 @@
 # Attack-Prone Feature Experiment
 For each dataset, I randomly trained on 1000 sentences in the train set and randomly tested on 100 sentences in the test set. Then I randomly selected 100 sentences in the test set to attack the model with the PWWS attacker.
+## Datasets
+### ag_news
+<img src="datasets/ag_news/image_train_long.png" alt="" width="whatever" height="whatever">
+
+### amazon_review_full
+<img src="datasets/amazon_review_full/image_train_long.png" alt="" width="whatever" height="whatever">
+
+### amazon_review_polarity
+<img src="datasets/amazon_review_polarity/image_train_long.png" alt="" width="whatever" height="whatever">
+
+### dbpedia
+<img src="datasets/dbpedia/image_train_long.png" alt="" width="whatever" height="whatever">
+
+### imdb
+<img src="datasets/imdb/image_train_long.png" alt="" width="whatever" height="whatever">
+
+### yahoo_answers
+<img src="datasets/yahoo_answers/image_train_long.png" alt="" width="whatever" height="whatever">
+
+### yelp_review_full
+<img src="datasets/yelp_review_full/image_train_long.png" alt="" width="whatever" height="whatever">
+
+### yelp_review_polarity
+<img src="datasets/yelp_review_polarity/image_train_long.png" alt="" width="whatever" height="whatever">
+
 # Results Overview
 
 ## Attack Success Rate
@@ -477,89 +502,89 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 | **Avg. Word Modif. Rate**          | 0.60395     | 0.68857                | 0.62544                    | 0.834       | 0.054654       | 0.2868            | X                    | X                        |
 
 ## ag_news
-|                   Summary|                   |
+|                  Summary|                   |
 | ------ | ------ |
-| Total Attacked Instances:       | 100       |
-| Successful Instances:           | 87        |
-| Attack Success Rate:            | 0.87      |
-| Avg. Running Time:              | 0.0072137 |
-| Total Query Exceeded:           | 0         |
-| Avg. Victim Model Queries:      | 48.54     |
-| Avg. Fluency (ppl):             | 16284     |
-| Avg. Grammatical Errors:        | 2.2529    |
-| Avg. Semantic Similarity:       | 0.83014   |
-| Avg. Levenshtein Edit Distance: | 4.1724    |
-| Avg. Word Modif. Rate:          | 0.60395   |
+| Total Attacked Instances:       | 100      |
+| Successful Instances:           | 79       |
+| Attack Success Rate:            | 0.79     |
+| Avg. Running Time:              | 0.010232 |
+| Total Query Exceeded:           | 0        |
+| Avg. Victim Model Queries:      | 54.06    |
+| Avg. Fluency (ppl):             | 17736    |
+| Avg. Grammatical Errors:        | 2.9241   |
+| Avg. Semantic Similarity:       | 0.82964  |
+| Avg. Levenshtein Edit Distance: | 4.7848   |
+| Avg. Word Modif. Rate:          | 0.58685  |
 ## amazon_review_full
 |                   Summary|                   |
 | ------ | ------ |
 | Total Attacked Instances:       | 100       |
-| Successful Instances:           | 62        |
-| Attack Success Rate:            | 0.62      |
-| Avg. Running Time:              | 0.0085613 |
+| Successful Instances:           | 73        |
+| Attack Success Rate:            | 0.73      |
+| Avg. Running Time:              | 0.0058532 |
 | Total Query Exceeded:           | 0         |
-| Avg. Victim Model Queries:      | 37.04     |
-| Avg. Fluency (ppl):             | 5983.8    |
-| Avg. Grammatical Errors:        | 1.371     |
-| Avg. Semantic Similarity:       | 0.71345   |
-| Avg. Levenshtein Edit Distance: | 2.5968    |
-| Avg. Word Modif. Rate:          | 0.68857   |
+| Avg. Victim Model Queries:      | 38.57     |
+| Avg. Fluency (ppl):             | 15906     |
+| Avg. Grammatical Errors:        | 1.5753    |
+| Avg. Semantic Similarity:       | 0.7291    |
+| Avg. Levenshtein Edit Distance: | 2.5205    |
+| Avg. Word Modif. Rate:          | 0.64812   |
 ## amazon_review_polarity
 |                   Summary|                   |
 | ------ | ------ |
 | Total Attacked Instances:       | 100       |
-| Successful Instances:           | 57        |
-| Attack Success Rate:            | 0.57      |
-| Avg. Running Time:              | 0.0074409 |
+| Successful Instances:           | 74        |
+| Attack Success Rate:            | 0.74      |
+| Avg. Running Time:              | 0.0083578 |
 | Total Query Exceeded:           | 0         |
-| Avg. Victim Model Queries:      | 36.99     |
-| Avg. Fluency (ppl):             | 8623.7    |
-| Avg. Grammatical Errors:        | 1.3684    |
-| Avg. Semantic Similarity:       | 0.69062   |
-| Avg. Levenshtein Edit Distance: | 2.7368    |
-| Avg. Word Modif. Rate:          | 0.62544   |
+| Avg. Victim Model Queries:      | 39.37     |
+| Avg. Fluency (ppl):             | 9704.9    |
+| Avg. Grammatical Errors:        | 1.6216    |
+| Avg. Semantic Similarity:       | 0.69535   |
+| Avg. Levenshtein Edit Distance: | 2.6892    |
+| Avg. Word Modif. Rate:          | 0.68286   |
 ## dbpedia
 |                   Summary|                   |
 | ------ | ------ |
 | Total Attacked Instances:       | 100       |
-| Successful Instances:           | 81        |
-| Attack Success Rate:            | 0.81      |
-| Avg. Running Time:              | 0.0076351 |
+| Successful Instances:           | 79        |
+| Attack Success Rate:            | 0.79      |
+| Avg. Running Time:              | 0.0050592 |
 | Total Query Exceeded:           | 0         |
-| Avg. Victim Model Queries:      | 16.5      |
-| Avg. Fluency (ppl):             | 7071.9    |
-| Avg. Grammatical Errors:        | 2.0741    |
-| Avg. Semantic Similarity:       | 0.77779   |
-| Avg. Levenshtein Edit Distance: | 2.7407    |
-| Avg. Word Modif. Rate:          | 0.834     |
+| Avg. Victim Model Queries:      | 15.66     |
+| Avg. Fluency (ppl):             | 16167     |
+| Avg. Grammatical Errors:        | 2.2532    |
+| Avg. Semantic Similarity:       | 0.7547    |
+| Avg. Levenshtein Edit Distance: | 2.6962    |
+| Avg. Word Modif. Rate:          | 0.82727   |
 ## sogou_news
 |                  Summary|                   |
 | ------ | ------ |
 | Total Attacked Instances:       | 100      |
-| Successful Instances:           | 13       |
-| Attack Success Rate:            | 0.13     |
-| Avg. Running Time:              | 0.014523 |
+| Successful Instances:           | 16       |
+| Attack Success Rate:            | 0.16     |
+| Avg. Running Time:              | 0.014101 |
 | Total Query Exceeded:           | 0        |
-| Avg. Victim Model Queries:      | 29       |
-| Avg. Fluency (ppl):             | 314.49   |
-| Avg. Grammatical Errors:        | 6.8462   |
-| Avg. Semantic Similarity:       | 0.95363  |
-| Avg. Levenshtein Edit Distance: | 0.46154  |
-| Avg. Word Modif. Rate:          | 0.054654 |
+| Avg. Victim Model Queries:      | 29.48    |
+| Avg. Fluency (ppl):             | 430.02   |
+| Avg. Grammatical Errors:        | 6.8125   |
+| Avg. Semantic Similarity:       | 0.88678  |
+| Avg. Levenshtein Edit Distance: | 0.5      |
+| Avg. Word Modif. Rate:          | 0.13472  |
 ## yahoo_answers
-|                  Summary|                   |
+|                   Summary|                   |
 | ------ | ------ |
-| Total Attacked Instances:       | 100      |
-| Successful Instances:           | 91       |
-| Attack Success Rate:            | 0.91     |
-| Avg. Running Time:              | 0.010651 |
-| Total Query Exceeded:           | 0        |
-| Avg. Victim Model Queries:      | 77.03    |
-| Avg. Fluency (ppl):             | 2241.4   |
-| Avg. Grammatical Errors:        | 2.7143   |
-| Avg. Semantic Similarity:       | 0.84422  |
-| Avg. Levenshtein Edit Distance: | 3.0879   |
-| Avg. Word Modif. Rate:          | 0.2868   |
+| Total Attacked Instances:       | 100       |
+| Successful Instances:           | 78        |
+| Attack Success Rate:            | 0.78      |
+| Avg. Running Time:              | 0.0089328 |
+| Total Query Exceeded:           | 0         |
+| Avg. Victim Model Queries:      | 69.32     |
+| Avg. Fluency (ppl):             | 2491.8    |
+| Avg. Grammatical Errors:        | 2.4615    |
+| Avg. Semantic Similarity:       | 0.81811   |
+| Avg. Levenshtein Edit Distance: | 2.7179    |
+| Avg. Word Modif. Rate:          | 0.32851   |
 # LSTM
 ## Summarizing Results
 | **METRICS\DATASET**                | **ag_news** | **amazon_review_full** | **amazon_review_polarity** | **dbpedia** | **sogou_news** | **yahoo_answers** | **yelp_review_full** | **yelp_review_polarity** |
@@ -576,86 +601,86 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 |                   Summary|                   |
 | ------ | ------ |
 | Total Attacked Instances:       | 100       |
-| Successful Instances:           | 65        |
-| Attack Success Rate:            | 0.65      |
-| Avg. Running Time:              | 0.0086237 |
+| Successful Instances:           | 84        |
+| Attack Success Rate:            | 0.84      |
+| Avg. Running Time:              | 0.0093035 |
 | Total Query Exceeded:           | 0         |
-| Avg. Victim Model Queries:      | 51.75     |
-| Avg. Fluency (ppl):             | 4305.2    |
-| Avg. Grammatical Errors:        | 2.6615    |
-| Avg. Semantic Similarity:       | 0.8055    |
-| Avg. Levenshtein Edit Distance: | 5.1692    |
-| Avg. Word Modif. Rate:          | 0.66454   |
+| Avg. Victim Model Queries:      | 53.84     |
+| Avg. Fluency (ppl):             | 26987     |
+| Avg. Grammatical Errors:        | 2.8214    |
+| Avg. Semantic Similarity:       | 0.83724   |
+| Avg. Levenshtein Edit Distance: | 4.8333    |
+| Avg. Word Modif. Rate:          | 0.6009    |
 ## amazon_review_full
 |                   Summary|                   |
 | ------ | ------ |
 | Total Attacked Instances:       | 100       |
-| Successful Instances:           | 75        |
-| Attack Success Rate:            | 0.75      |
-| Avg. Running Time:              | 0.0085722 |
+| Successful Instances:           | 78        |
+| Attack Success Rate:            | 0.78      |
+| Avg. Running Time:              | 0.0068884 |
 | Total Query Exceeded:           | 0         |
-| Avg. Victim Model Queries:      | 37.04     |
-| Avg. Fluency (ppl):             | 26716     |
-| Avg. Grammatical Errors:        | 1.72      |
-| Avg. Semantic Similarity:       | 0.67169   |
-| Avg. Levenshtein Edit Distance: | 2.6533    |
-| Avg. Word Modif. Rate:          | 0.57327   |
+| Avg. Victim Model Queries:      | 38.46     |
+| Avg. Fluency (ppl):             | 23093     |
+| Avg. Grammatical Errors:        | 1.6667    |
+| Avg. Semantic Similarity:       | 0.7452    |
+| Avg. Levenshtein Edit Distance: | 2.2564    |
+| Avg. Word Modif. Rate:          | 0.54297   |
 ## amazon_review_polarity
-|                  Summary|                   |
-| ------ | ------ |
-| Total Attacked Instances:       | 100      |
-| Successful Instances:           | 70       |
-| Attack Success Rate:            | 0.7      |
-| Avg. Running Time:              | 0.010094 |
-| Total Query Exceeded:           | 0        |
-| Avg. Victim Model Queries:      | 36.79    |
-| Avg. Fluency (ppl):             | 7755.1   |
-| Avg. Grammatical Errors:        | 1.4857   |
-| Avg. Semantic Similarity:       | 0.68932  |
-| Avg. Levenshtein Edit Distance: | 2.5429   |
-| Avg. Word Modif. Rate:          | 0.66905  |
-## dbpedia
-|                  Summary|                   |
-| ------ | ------ |
-| Total Attacked Instances:       | 100      |
-| Successful Instances:           | 84       |
-| Attack Success Rate:            | 0.84     |
-| Avg. Running Time:              | 0.006229 |
-| Total Query Exceeded:           | 0        |
-| Avg. Victim Model Queries:      | 16.59    |
-| Avg. Fluency (ppl):             | 20182    |
-| Avg. Grammatical Errors:        | 1.9048   |
-| Avg. Semantic Similarity:       | 0.76734  |
-| Avg. Levenshtein Edit Distance: | 2.7381   |
-| Avg. Word Modif. Rate:          | 0.84702  |
-## sogou_news
-|                  Summary|                   |
-| ------ | ------ |
-| Total Attacked Instances:       | 100      |
-| Successful Instances:           | 20       |
-| Attack Success Rate:            | 0.2      |
-| Avg. Running Time:              | 0.012125 |
-| Total Query Exceeded:           | 0        |
-| Avg. Victim Model Queries:      | 28.66    |
-| Avg. Fluency (ppl):             | 164.88   |
-| Avg. Grammatical Errors:        | 9        |
-| Avg. Semantic Similarity:       | 0.9367   |
-| Avg. Levenshtein Edit Distance: | 0.4      |
-| Avg. Word Modif. Rate:          | 0.044097 |
-## yahoo_answers
 |                   Summary|                   |
 | ------ | ------ |
 | Total Attacked Instances:       | 100       |
 | Successful Instances:           | 68        |
 | Attack Success Rate:            | 0.68      |
-| Avg. Running Time:              | 0.0079263 |
+| Avg. Running Time:              | 0.0073055 |
 | Total Query Exceeded:           | 0         |
-| Avg. Victim Model Queries:      | 73.13     |
-| Avg. Fluency (ppl):             | 2978.7    |
-| Avg. Grammatical Errors:        | 3.0588    |
-| Avg. Semantic Similarity:       | 0.82857   |
-| Avg. Levenshtein Edit Distance: | 3.2794    |
-| Avg. Word Modif. Rate:          | 0.30678   |
+| Avg. Victim Model Queries:      | 33.31     |
+| Avg. Fluency (ppl):             | 5952.4    |
+| Avg. Grammatical Errors:        | 1.5294    |
+| Avg. Semantic Similarity:       | 0.72107   |
+| Avg. Levenshtein Edit Distance: | 2.5       |
+| Avg. Word Modif. Rate:          | 0.66541   |
+## dbpedia
+|                   Summary|                   |
+| ------ | ------ |
+| Total Attacked Instances:       | 100       |
+| Successful Instances:           | 77        |
+| Attack Success Rate:            | 0.77      |
+| Avg. Running Time:              | 0.0066363 |
+| Total Query Exceeded:           | 0         |
+| Avg. Victim Model Queries:      | 15.62     |
+| Avg. Fluency (ppl):             | 14218     |
+| Avg. Grammatical Errors:        | 2.2468    |
+| Avg. Semantic Similarity:       | 0.78516   |
+| Avg. Levenshtein Edit Distance: | 2.8052    |
+| Avg. Word Modif. Rate:          | 0.85711   |
+## sogou_news
+|                   Summary|                   |
+| ------ | ------ |
+| Total Attacked Instances:       | 100       |
+| Successful Instances:           | 27        |
+| Attack Success Rate:            | 0.27      |
+| Avg. Running Time:              | 0.0061623 |
+| Total Query Exceeded:           | 0         |
+| Avg. Victim Model Queries:      | 26.63     |
+| Avg. Fluency (ppl):             | 307.21    |
+| Avg. Grammatical Errors:        | 7.9259    |
+| Avg. Semantic Similarity:       | 0.8928    |
+| Avg. Levenshtein Edit Distance: | 0.40741   |
+| Avg. Word Modif. Rate:          | 0.080505  |
+## yahoo_answers
+|                  Summary|                   |
+| ------ | ------ |
+| Total Attacked Instances:       | 100      |
+| Successful Instances:           | 79       |
+| Attack Success Rate:            | 0.79     |
+| Avg. Running Time:              | 0.005626 |
+| Total Query Exceeded:           | 0        |
+| Avg. Victim Model Queries:      | 69.57    |
+| Avg. Fluency (ppl):             | 3841.2   |
+| Avg. Grammatical Errors:        | 2.8608   |
+| Avg. Semantic Similarity:       | 0.81201  |
+| Avg. Levenshtein Edit Distance: | 3.3418   |
+| Avg. Word Modif. Rate:          | 0.34942  |
 # RNN
 | **METRICS\DATASET**                | **ag_news** | **amazon_review_full** | **amazon_review_polarity** | **dbpedia** | **sogou_news** | **yahoo_answers** | **yelp_review_full** | **yelp_review_polarity** |
 |:----------------------------------:|:-----------:|:----------------------:|:--------------------------:|:-----------:|:--------------:|:-----------------:|:--------------------:|:------------------------:|
@@ -671,16 +696,16 @@ For each dataset, I randomly trained on 1000 sentences in the train set and rand
 |                   Summary|                   |
 | ------ | ------ |
 | Total Attacked Instances:       | 100       |
-| Successful Instances:           | 73        |
-| Attack Success Rate:            | 0.73      |
-| Avg. Running Time:              | 0.0061613 |
+| Successful Instances:           | 88        |
+| Attack Success Rate:            | 0.88      |
+| Avg. Running Time:              | 0.0061675 |
 | Total Query Exceeded:           | 0         |
-| Avg. Victim Model Queries:      | 48.94     |
-| Avg. Fluency (ppl):             | 12848     |
-| Avg. Grammatical Errors:        | 2.3836    |
-| Avg. Semantic Similarity:       | 0.81213   |
-| Avg. Levenshtein Edit Distance: | 4.8767    |
-| Avg. Word Modif. Rate:          | 0.65107   |
+| Avg. Victim Model Queries:      | 53.83     |
+| Avg. Fluency (ppl):             | 5482.2    |
+| Avg. Grammatical Errors:        | 2.8864    |
+| Avg. Semantic Similarity:       | 0.82596   |
+| Avg. Levenshtein Edit Distance: | 4.7841    |
+| Avg. Word Modif. Rate:          | 0.57929   |
 ## amazon_review_full
 |                   Summary|                   |
 | ------ | ------ |

@@ -3,13 +3,16 @@ from models import *
 import torch
 import os
 import pathlib
+import pandas as pd
 
 os.environ["WANDB_DISABLED"] = "true"
 args = parse_train_args()
 args.device = 'cuda'if torch.cuda.is_available() else 'cpu'
 args.train_eval = 'train'
 if __name__ == '__main__':
-	train_data, test_data = load_dataset(args)
+	dataset_dir = os.path.join(os.getcwd(),'datasets',args.dataset)
+	train_data = pd.read_csv(dataset_dir+f'/process_train_{args.dataset_size}.csv', index_col=False)
+	test_data = pd.read_csv(dataset_dir+f'/process_test_{args.dataset_size}.csv', index_col=False)
 	model, tokenizer = get_model(args)
 	
 	if args.model in ['roberta-base','bert-base']:

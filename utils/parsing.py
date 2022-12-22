@@ -8,7 +8,7 @@ def parse_train_args():
     parser.add_argument('--log_dir', type=str, default='./test_run', help='Folder in which to save model and logs')
     parser.add_argument('--limit_train', type=int, default=1000, help='Number of samples for training set')
     parser.add_argument('--limit_test', type=int, default=100, help='Number of samples for testing set')
-    parser.add_argument('--dataset', type=str, default='dbpedia', 
+    parser.add_argument('--dataset', type=str, default='yahoo_answers', 
                                                choices=['ag_news','amazon_review_full','amazon_review_polarity',
                                                         'dbpedia','imdb','sogou_news','yahoo_answers',
                                                         'yelp_review_full','yelp_review_polarity'])
@@ -21,7 +21,7 @@ def parse_train_args():
     
     # Training arguments
     parser.add_argument('--batch_size', type=int, default=5, help='batch_size for training')    
-    parser.add_argument('--epoches', type=int, default=10, help='batch_size for training')
+    parser.add_argument('--epoches', type=int, default=15, help='batch_size for training')
     parser.add_argument('--learning_rate', type=float, default=5e-4, help='Initial learning rate')    
     
     # Configuration of character-level CNN
@@ -51,11 +51,16 @@ def parse_train_args():
 
     args = parser.parse_args()
 
-    if args.model == 'char_cnn':
-        args.number_of_characters = len(args.alphabet)+len(args.extra_characters)
-    
     check_constraint(args)    
     add_load_dir(args)
+
+    if args.model == 'char_cnn':
+        args.number_of_characters = len(args.alphabet)+len(args.extra_characters)
+
+    if args.model in ['bilstm','lstm','rnn','birnn']:
+        args.dataset_size = 'short'
+    else:
+        args.dataset_size = 'long'
 
     match args.dataset:
         case 'ag_news':
