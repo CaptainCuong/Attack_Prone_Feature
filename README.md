@@ -6,6 +6,10 @@ Average length: 45.897
 
 Number of unique tokens: 7775
 
+Minimum number of tokens: 15
+
+Maximum number of tokens: 211
+
 <img src="datasets/ag_news/image_train_long.png" alt="" width="whatever" height="whatever">
 
 <img src="datasets/ag_news/image_train_token_long.png" alt="" width="whatever" height="whatever">
@@ -14,6 +18,10 @@ Number of unique tokens: 7775
 Average length: 100.649
 
 Number of unique tokens: 9583
+
+Minimum number of tokens: 21
+
+Maximum number of tokens: 271
 
 <img src="datasets/amazon_review_full/image_train_long.png" alt="" width="whatever" height="whatever">
 
@@ -24,6 +32,10 @@ Average length: 101.834
 
 Number of unique tokens: 9692
 
+Minimum number of tokens: 16
+
+Maximum number of tokens: 411
+
 <img src="datasets/amazon_review_polarity/image_train_long.png" alt="" width="whatever" height="whatever">
 
 <img src="datasets/amazon_review_polarity/image_train_token_long.png" alt="" width="whatever" height="whatever">
@@ -32,6 +44,10 @@ Number of unique tokens: 9692
 Average length: 66.228
 
 Number of unique tokens: 10074
+
+Minimum number of tokens: 7
+
+Maximum number of tokens: 398
 
 <img src="datasets/dbpedia/image_train_long.png" alt="" width="whatever" height="whatever">
 
@@ -42,6 +58,10 @@ Average length: 321.64
 
 Number of unique tokens: 15132
 
+Minimum number of tokens: 50
+
+Maximum number of tokens: 1712
+
 <img src="datasets/imdb/image_train_long.png" alt="" width="whatever" height="whatever">
 
 <img src="datasets/imdb/image_train_token_long.png" alt="" width="whatever" height="whatever">
@@ -50,6 +70,10 @@ Number of unique tokens: 15132
 Average length: 1690.045
 
 Number of unique tokens: 2745
+
+Minimum number of tokens: 12
+
+Maximum number of tokens: 23173
 
 <img src="datasets/sogou_news/image_train_long.png" alt="" width="whatever" height="whatever">
 
@@ -60,6 +84,10 @@ Average length: 56.644
 
 Number of unique tokens: 6657
 
+Minimum number of tokens: 3
+
+Maximum number of tokens: 667
+
 <img src="datasets/yahoo_answers/image_train_long.png" alt="" width="whatever" height="whatever">
 
 <img src="datasets/yahoo_answers/image_train_token_long.png" alt="" width="whatever" height="whatever">
@@ -69,6 +97,10 @@ Average length: 190.98
 
 Number of unique tokens: 9443
 
+Minimum number of tokens: 3
+
+Maximum number of tokens: 1310
+
 <img src="datasets/yelp_review_full/image_train_long.png" alt="" width="whatever" height="whatever">
 
 <img src="datasets/yelp_review_full/image_train_token_long.png" alt="" width="whatever" height="whatever">
@@ -77,6 +109,10 @@ Number of unique tokens: 9443
 Average length: 188.554
 
 Number of unique tokens: 9519
+
+Minimum number of tokens: 7
+
+Maximum number of tokens: 1220
 
 <img src="datasets/yelp_review_polarity/image_train_long.png" alt="" width="whatever" height="whatever">
 
