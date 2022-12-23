@@ -8,7 +8,7 @@ def parse_train_args():
     parser.add_argument('--log_dir', type=str, default='./test_run', help='Folder in which to save model and logs')
     parser.add_argument('--limit_train', type=int, default=1000, help='Number of samples for training set')
     parser.add_argument('--limit_test', type=int, default=100, help='Number of samples for testing set')
-    parser.add_argument('--dataset', type=str, default='yelp_review_polarity', 
+    parser.add_argument('--dataset', type=str, default='ag_news', 
                                                choices=['ag_news','amazon_review_full','amazon_review_polarity',
                                                         'dbpedia','imdb','sogou_news','yahoo_answers',
                                                         'yelp_review_full','yelp_review_polarity'])
