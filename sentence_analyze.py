@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import numpy as np
 from helper import AutoTokenizer
+import matplotlib.pyplot as plt
 
 args = parse_train_args()
 if __name__ == '__main__':
@@ -14,3 +15,10 @@ if __name__ == '__main__':
     for text in documents:
         len_lst.append(len(tokenizer(text)['input_ids']))
     print(sum(len_lst)/len(len_lst))
+    print(len_lst[-100:])
+    plt.hist(len_lst,bins=100)
+    plt.suptitle(f'Distribution of the numbers of tokens in dataset {args.dataset}')
+    plt.ylabel('Number of sentences')
+    plt.xlabel('Number of tokens')
+    plt.savefig(dataset_dir+f'/image_train_token_{args.dataset_size}.png')
+    plt.show() 

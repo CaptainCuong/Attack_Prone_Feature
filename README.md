@@ -8,12 +8,16 @@ Number of unique tokens: 7775
 
 <img src="datasets/ag_news/image_train_long.png" alt="" width="whatever" height="whatever">
 
+<img src="datasets/ag_news/image_train_token_long.png" alt="" width="whatever" height="whatever">
+
 ### amazon_review_full
 Average length: 100.649
 
 Number of unique tokens: 9583
 
 <img src="datasets/amazon_review_full/image_train_long.png" alt="" width="whatever" height="whatever">
+
+<img src="datasets/amazon_review_full/image_train_token_long.png" alt="" width="whatever" height="whatever">
 
 ### amazon_review_polarity
 Average length: 101.834
@@ -22,12 +26,16 @@ Number of unique tokens: 9692
 
 <img src="datasets/amazon_review_polarity/image_train_long.png" alt="" width="whatever" height="whatever">
 
+<img src="datasets/amazon_review_polarity/image_train_token_long.png" alt="" width="whatever" height="whatever">
+
 ### dbpedia
 Average length: 66.228
 
 Number of unique tokens: 10074
 
 <img src="datasets/dbpedia/image_train_long.png" alt="" width="whatever" height="whatever">
+
+<img src="datasets/dbpedia/image_train_token_long.png" alt="" width="whatever" height="whatever">
 
 ### imdb
 Average length: 321.64
@@ -36,12 +44,25 @@ Number of unique tokens: 15132
 
 <img src="datasets/imdb/image_train_long.png" alt="" width="whatever" height="whatever">
 
+<img src="datasets/imdb/image_train_token_long.png" alt="" width="whatever" height="whatever">
+
+### sogou_news
+Average length: 1690.045
+
+Number of unique tokens: 2745
+
+<img src="datasets/sogou_news/image_train_long.png" alt="" width="whatever" height="whatever">
+
+<img src="datasets/sogou_news/image_train_token_long.png" alt="" width="whatever" height="whatever">
+
 ### yahoo_answers
 Average length: 56.644
 
 Number of unique tokens: 6657
 
 <img src="datasets/yahoo_answers/image_train_long.png" alt="" width="whatever" height="whatever">
+
+<img src="datasets/yahoo_answers/image_train_token_long.png" alt="" width="whatever" height="whatever">
 
 ### yelp_review_full
 Average length: 190.98
@@ -50,12 +71,16 @@ Number of unique tokens: 9443
 
 <img src="datasets/yelp_review_full/image_train_long.png" alt="" width="whatever" height="whatever">
 
+<img src="datasets/yelp_review_full/image_train_token_long.png" alt="" width="whatever" height="whatever">
+
 ### yelp_review_polarity
 Average length: 188.554
 
 Number of unique tokens: 9519
 
-<img src="datasets/yelp_review_polarity/image_train_long.png" alt="" width="whatever" height="whatever">
+<img src="datasets/yelp_review_polarity/image_train_token_long.png" alt="" width="whatever" height="whatever">
+
+<img src="datasets/yelp_review_polarity/image_train_token_long.png" alt="" width="whatever" height="whatever">
 
 # Results Overview
 
