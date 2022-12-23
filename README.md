@@ -78,7 +78,7 @@ Average length: 188.554
 
 Number of unique tokens: 9519
 
-<img src="datasets/yelp_review_polarity/image_train_token_long.png" alt="" width="whatever" height="whatever">
+<img src="datasets/yelp_review_polarity/image_train_long.png" alt="" width="whatever" height="whatever">
 
 <img src="datasets/yelp_review_polarity/image_train_token_long.png" alt="" width="whatever" height="whatever">
 
