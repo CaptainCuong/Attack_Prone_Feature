@@ -2,27 +2,35 @@
 For each dataset, I randomly trained on 1000 sentences in the train set and randomly tested on 100 sentences in the test set. Then I randomly selected 100 sentences in the test set to attack the model with the PWWS attacker.
 ## Datasets
 ### ag_news
+Average length: 45.897
 <img src="datasets/ag_news/image_train_long.png" alt="" width="whatever" height="whatever">
 
 ### amazon_review_full
+Average length: 100.649
 <img src="datasets/amazon_review_full/image_train_long.png" alt="" width="whatever" height="whatever">
 
 ### amazon_review_polarity
+Average length: 101.834
 <img src="datasets/amazon_review_polarity/image_train_long.png" alt="" width="whatever" height="whatever">
 
 ### dbpedia
+Average length: 66.228
 <img src="datasets/dbpedia/image_train_long.png" alt="" width="whatever" height="whatever">
 
 ### imdb
+Average length: 321.64
 <img src="datasets/imdb/image_train_long.png" alt="" width="whatever" height="whatever">
 
 ### yahoo_answers
+Average length: 56.644
 <img src="datasets/yahoo_answers/image_train_long.png" alt="" width="whatever" height="whatever">
 
 ### yelp_review_full
+Average length: 190.98
 <img src="datasets/yelp_review_full/image_train_long.png" alt="" width="whatever" height="whatever">
 
 ### yelp_review_polarity
+Average length: 188.554
 <img src="datasets/yelp_review_polarity/image_train_long.png" alt="" width="whatever" height="whatever">
 
 # Results Overview
