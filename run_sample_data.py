@@ -30,13 +30,13 @@ if args.sample == 'sub_dataset':
             f.write(str(args.dataset))
     args.train_eval_sample = 'sample_attack'
     
-    logging.info('Sample attack samples')
-    for dataset, _ in tqdm(dataset_lst):
-        args.dataset = dataset
-        args.limit_test = 100
-        attack_index = load_dataset(args)
-        with open(f'generated_data/{dataset}_test_index.npy', 'wb') as f:
-            np.save(f, np.array(attack_index))
+    # logging.info('Sample attack samples')
+    # for dataset, _ in tqdm(dataset_lst):
+    #     args.dataset = dataset
+    #     args.limit_test = 100
+    #     attack_index = load_dataset(args)
+    #     with open(f'generated_data/{dataset}_test_index.npy', 'wb') as f:
+    #         np.save(f, np.array(attack_index))
 elif args.sample == 'data_info':
     with open("generated_data/data.csv", "w") as file:
         file.write('Dataset,Average number of tokens,Number of unique tokens,Minimum number of tokens,Maximum number of tokens,Number of cluster,Number of classes,ASR_TextFooler,ASR_PWWS,ASR_BERT,ASR_DeepWordBug\n')
