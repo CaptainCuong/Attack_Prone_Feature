@@ -6,8 +6,8 @@ import datasets
 
 def preprocess_data(args, tokenizer, train_data=None, test_data=None):
 
-    assert args.train_eval == 'train' and train_data is not None or \
-           args.train_eval == 'eval' and train_data is None
+    assert args.train_eval_sample == 'train' and train_data is not None or \
+           args.train_eval_sample == 'eval' and train_data is None
     tqdm.pandas()
 
     # Process 'text'
@@ -18,7 +18,7 @@ def preprocess_data(args, tokenizer, train_data=None, test_data=None):
         else:
             ret = list(tokenizer(dataset_text, padding = 'max_length', truncation=True)['input_ids'])
         return ret
-    if args.train_eval == 'train':
+    if args.train_eval_sample == 'train':
         train_data['text'] = train_data['text'].progress_map(tokenization)
         test_data['text'] = test_data['text'].progress_map(tokenization)
     print('-'*50)
@@ -26,12 +26,12 @@ def preprocess_data(args, tokenizer, train_data=None, test_data=None):
     # Process 'label'
     print('Processing label')
     if args.dataset != 'imdb':
-        if args.train_eval == 'train':
+        if args.train_eval_sample == 'train':
             train_data['label'] = train_data['label'].progress_map(lambda x:x-1)
         test_data['label'] = test_data['label'].progress_map(lambda x:x-1)
     print('-'*50)
    
-    if args.train_eval == 'train':
+    if args.train_eval_sample == 'train':
         train_data = datasets.Dataset.from_dict({'text':train_data['text'].tolist(), 'label':train_data['label'].tolist()})
         test_data = datasets.Dataset.from_dict({'text':test_data['text'].tolist(), 'label':test_data['label'].tolist()})
         return train_data, test_data    
@@ -39,18 +39,18 @@ def preprocess_data(args, tokenizer, train_data=None, test_data=None):
     return test_data
 
 def preprocess_huggingface(args, tokenizer, train_data=None, test_data=None):
-    assert args.train_eval == 'train' and train_data is not None or \
-           args.train_eval == 'eval' and train_data is None
+    assert args.train_eval_sample == 'train' and train_data is not None or \
+           args.train_eval_sample == 'eval' and train_data is None
     
     # Process 'label'
     print('Processing label')
     if args.dataset != 'imdb':
         tqdm.pandas()
-        if args.train_eval == 'train':
+        if args.train_eval_sample == 'train':
             train_data['label'] = train_data['label'].progress_map(lambda x:x-1)
         test_data['label'] = test_data['label'].progress_map(lambda x:x-1)
     print('-'*50)
-    if args.train_eval == 'eval':
+    if args.train_eval_sample == 'eval':
         return datasets.Dataset.from_dict({'x':test_data['text'].tolist(),'y':test_data['label'].tolist()})
 
     # Tokenize

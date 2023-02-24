@@ -6,11 +6,12 @@ def parse_train_args():
     # General arguments
     parser = ArgumentParser()
     parser.add_argument('--log_dir', type=str, default='./test_run', help='Folder in which to save model and logs')
-    parser.add_argument('--limit_train', type=int, default=1000, help='Number of samples for training set')
+    parser.add_argument('--load_checkpoint', type=str, default='False', choices=['True','False'], help='Load a checkpoit')
+    parser.add_argument('--limit_train', type=int, default=900, help='Number of samples for training set')
     parser.add_argument('--limit_test', type=int, default=100, help='Number of samples for testing set')
     parser.add_argument('--dataset', type=str, default='yelp_review_polarity', 
                                                choices=['ag_news','amazon_review_full','amazon_review_polarity',
-                                                        'dbpedia','imdb','sogou_news','yahoo_answers',
+                                                        'dbpedia','imdb','yahoo_answers',
                                                         'yelp_review_full','yelp_review_polarity'])
     parser.add_argument('--model', type=str, default='bert-base', 
                                    help='Model for training or evaluation',
@@ -18,10 +19,18 @@ def parse_train_args():
                                             'bert-base','bilstm','lstm',
                                             'rnn','birnn'])
     parser.add_argument('--max_length', type=int, default=512, help='Folder in which to save model and logs')
-    
+    parser.add_argument('--chunk', type=int, help='Chunk of dataset used for generating data')
+    parser.add_argument('--sample', type=str, default='data_info', 
+                                    choices=['sub_dataset','data_info'],
+                                    help='Chunk of dataset used for generating data')
+    parser.add_argument('--attack_type', type=str, default='TextFooler',
+                                    nargs='+',
+                                    choices=['TextFooler','PWWS','DeepWordBug','BERT'],
+                                    help='Attacker used for evaluation')
+
     # Training arguments
-    parser.add_argument('--batch_size', type=int, default=5, help='batch_size for training')    
-    parser.add_argument('--epoches', type=int, default=15, help='batch_size for training')
+    parser.add_argument('--batch_size', type=int, default=3, help='batch_size for training')    
+    parser.add_argument('--epoches', type=int, default=5, help='batch_size for training')
     parser.add_argument('--learning_rate', type=float, default=5e-4, help='Initial learning rate')    
     
     # Configuration of character-level CNN
@@ -86,7 +95,7 @@ def parse_train_args():
 
 def add_load_dir(args):
     max_length = args.max_length if args.model != 'char_cnn' else args.max_length_char_cnn
-    args.load_dir = os.path.join(args.log_dir, args.model) + f'_{args.dataset}_{max_length}'
+    args.load_dir = os.path.join(args.log_dir, args.model) + f'_{max_length}'
 
 def check_constraint(args):
     if args.model == 'char_cnn':

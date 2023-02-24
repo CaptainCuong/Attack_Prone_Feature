@@ -18,7 +18,7 @@ def no_ssl_verify():
         request.urlopen.__kwdefaults__.update({'context': None})
 
 args = parse_train_args()
-args.device = 'cuda'if torch.cuda.is_available() else 'cpu'
+args.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 args.train_eval = 'eval'
 if __name__ == '__main__':
     dataset_dir = os.path.join(os.getcwd(),'datasets',args.dataset)

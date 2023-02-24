@@ -18,12 +18,12 @@ if __name__ == '__main__':
 	if args.model in ['roberta-base','bert-base']:
 		train_data, test_data = preprocess_huggingface(args, tokenizer, train_data, test_data)
 		model = model.to(args.device)
-		try:
-			model.from_pretrained(pathlib.PurePath(args.load_dir))
-			print('Successfully load trained model')
-		except:
-			print('Fail to load trained model')
-		train_huggingface(args, model, train_data, train_data)
+		# try:
+		# 	model.from_pretrained(pathlib.PurePath(args.load_dir))
+		# 	print('Successfully load trained model')
+		# except:
+		# 	print('Fail to load trained model')
+		train_huggingface(args, model, train_data, test_data)
 		model.save_pretrained(args.load_dir)
 	else:
 		train_data, test_data = preprocess_data(args, tokenizer, train_data, test_data)
