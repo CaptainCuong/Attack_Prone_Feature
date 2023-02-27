@@ -1,7 +1,7 @@
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 import numpy as np
 import os
-from helper import Trainer, TrainingArguments
+from transformers import Trainer, TrainingArguments
 import torch
 from tqdm import tqdm
 from sklearn.metrics import (ConfusionMatrixDisplay,

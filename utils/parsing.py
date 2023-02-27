@@ -71,26 +71,25 @@ def parse_train_args():
     else:
         args.dataset_size = 'long'
 
-    match args.dataset:
-        case 'ag_news':
-            args.number_of_class = 4
-        case 'amazon_review_full':
-            args.number_of_class = 5
-        case 'amazon_review_polarity':
-            args.number_of_class = 2
-        case 'dbpedia':
-            args.number_of_class = 14 
-        case 'imdb':
-            args.number_of_class = 2
-        case 'sogou_news':
-            args.number_of_class = 5
-        case 'yahoo_answers':
-            args.number_of_class = 10
-        case 'yelp_review_full':
-            args.number_of_class = 5
-        case 'yelp_review_polarity':
-            args.number_of_class = 2
-        
+    if args.dataset == 'ag_news':
+        args.number_of_class = 4
+    elif args.dataset == 'amazon_review_full':
+        args.number_of_class = 5
+    elif args.dataset == 'amazon_review_polarity':
+        args.number_of_class = 2
+    elif args.dataset == 'dbpedia':
+        args.number_of_class = 14 
+    elif args.dataset == 'imdb':
+        args.number_of_class = 2
+    elif args.dataset == 'sogou_news':
+        args.number_of_class = 5
+    elif args.dataset == 'yahoo_answers':
+        args.number_of_class = 10
+    elif args.dataset == 'yelp_review_full':
+        args.number_of_class = 5
+    elif args.dataset == 'yelp_review_polarity':
+        args.number_of_class = 2
+
     return args
 
 def add_load_dir(args):

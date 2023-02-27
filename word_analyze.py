@@ -2,7 +2,7 @@ from utils import *
 import os
 import pandas as pd
 import numpy as np
-from helper import AutoTokenizer
+from transformers import AutoTokenizer
 
 args = parse_train_args()
 if __name__ == '__main__':

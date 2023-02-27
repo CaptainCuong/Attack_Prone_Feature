@@ -2,7 +2,7 @@ from utils import *
 import os
 import pandas as pd
 import numpy as np
-from helper import AutoTokenizer
+from transformers import AutoTokenizer
 import matplotlib.pyplot as plt
 
 args = parse_train_args()
