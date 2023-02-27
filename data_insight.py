@@ -6,7 +6,7 @@ import numpy as np
 import hdbscan
 from top2vec import Top2Vec
 from utils import *
-from helper import AutoTokenizer
+from transformers import AutoTokenizer
 
 args = parse_train_args()
 args.train_eval_sample = 'train'

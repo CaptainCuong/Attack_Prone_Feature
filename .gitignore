@@ -2,7 +2,6 @@ helper
 data
 datasets/*.zip
 texthero/**
-top2vec/**
 datasets/ag_news/*.csv
 datasets/amazon_review_full/*.csv
 datasets/amazon_review_polarity/*.csv
