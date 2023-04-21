@@ -966,5 +966,72 @@ Maximum number of tokens: 1220
 | Avg. Levenshtein Edit Distance: | 2.6897    |
 | Avg. Word Modif. Rate:          | 0.3032    |
 
-<!-- # BUG
-IndexError: index out of range in self -->
+# Install Dependencies
+```
+!python3.10 -m pip install --upgrade pip
+!python3.10 -m pip install transformers[torch]
+!python3.10 -m pip install OpenAttack
+!python3.10 -m pip install scikit-learn
+!python3.10 -m pip install matplotlib
+!python3.10 -m pip install hdbscan
+!python3.10 -m pip install gensim
+!python3.10 -m pip install umap-learn
+!python3.10 -m pip install wordcloud
+!python3.10 -m pip install top2vec[sentence_encoders]
+!python3.10 -m pip install language-tool-python
+```
+
+# Install Python3.10
+```
+!apt-get update
+!apt-get install sudo
+!sudo apt update && sudo apt upgrade -y
+!sudo add-apt-repository ppa:deadsnakes/ppa
+!sudo apt update
+!sudo apt-get install lzma
+!sudo apt-get install liblzma-dev
+!sudo apt-get install libbz2-dev
+!sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev
+!wget https://www.python.org/ftp/python/3.10.9/Python-3.10.9.tgz
+!tar -xf Python-3.10.*.tgz
+%cd Python-3.10.9
+!./configure --enable-optimizations
+!make -j 64
+!sudo make altinstall
+!python3.10 -m venv .
+%source bin/activate
+```
+
+# Extract Dataset
+```
+!unzip drive-download-20221130T095944Z-001.zip -d Attack_Prone_Feature/datasets
+!unzip drive-download-20221130T095944Z-002.zip -d Attack_Prone_Feature/datasets
+
+%cd Attack_Prone_Feature/datasets
+
+!tar -xvf amazon_review_full_csv.tar.gz -C amazon_review_full
+!tar -xvf amazon_review_polarity_csv.tar.gz -C amazon_review_polarity
+!tar -xvf ag_news_csv.tar.gz -C ag_news
+!tar -xvf dbpedia_csv.tar.gz -C dbpedia
+!tar -xvf sogou_news_csv.tar.gz -C sogou_news
+!tar -xvf yahoo_answers_csv.tar.gz -C yahoo_answers
+!tar -xvf yelp_review_full_csv.tar.gz -C yelp_review_full
+!tar -xvf yelp_review_polarity_csv.tar.gz -C yelp_review_polarity
+!mv amazon_review_full/amazon_review_full_csv/* amazon_review_full
+!mv amazon_review_polarity/amazon_review_polarity_csv/* amazon_review_polarity
+!mv ag_news/ag_news_csv/* ag_news
+!mv dbpedia/dbpedia_csv/* dbpedia
+!mv sogou_news/sogou_news_csv/* sogou_news
+!mv yahoo_answers/yahoo_answers_csv/* yahoo_answers
+!mv yelp_review_full/yelp_review_full_csv/* yelp_review_full
+!mv yelp_review_polarity/yelp_review_polarity_csv/* yelp_review_polarity
+!rm -r amazon_review_full/amazon_review_full_csv
+!rm -r amazon_review_polarity/amazon_review_polarity_csv
+!rm -r ag_news/ag_news_csv
+!rm -r dbpedia/dbpedia_csv
+!rm -r sogou_news/sogou_news_csv
+!rm -r yahoo_answers/yahoo_answers_csv
+!rm -r yelp_review_full/yelp_review_full_csv
+!rm -r yelp_review_polarity/yelp_review_polarity_csv
+```
+

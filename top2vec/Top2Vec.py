@@ -1109,6 +1109,8 @@ class Top2Vec:
                 else:
                     logger.info(f'Loading {self.embedding_model} model at {self.embedding_model_path}')
                     module = self.embedding_model_path
+                print(module)
+                raise
                 self.embed = hub.load(module)
 
             elif self.embedding_model in sbert_models:

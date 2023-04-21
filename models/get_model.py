@@ -29,6 +29,5 @@ def get_model(args):
 		from .rnn import RNN
 		model = RNN(args)
 	else:
-		raise Exception('Wrong model')
-
+ 		raise Exception('Wrong model')
 	return model, tokenizer

@@ -3,6 +3,7 @@ from tqdm import tqdm
 import pandas as pd
 import torch
 import datasets
+import numpy as np
 
 def preprocess_data(args, tokenizer, train_data=None, test_data=None):
 
@@ -36,6 +37,7 @@ def preprocess_data(args, tokenizer, train_data=None, test_data=None):
         test_data = datasets.Dataset.from_dict({'text':test_data['text'].tolist(), 'label':test_data['label'].tolist()})
         return train_data, test_data    
     test_data = datasets.Dataset.from_dict({'x':test_data['text'].tolist(), 'y':test_data['label'].tolist()})
+    
     return test_data
 
 def preprocess_huggingface(args, tokenizer, train_data=None, test_data=None):

@@ -68,7 +68,62 @@ def load_dataset(args, train_index=None, test_index=None):
             df_train = pd.read_csv('datasets/yelp_review_polarity/train.csv', names=['label','text'], index_col=False)
         else:
             df_test = pd.read_csv('datasets/yelp_review_polarity/test.csv', names=['label','text'], index_col=False)
+    elif args.dataset == 'banking77__2':
+        if args.train_eval_sample in ['train','sample_train']:
+            df_train = pd.read_csv('datasets/banking77__2/train.csv', names=['text','label'], index_col=False)
+        else:
+            df_test = pd.read_csv('datasets/banking77__2/test.csv', names=['text','label'], index_col=False)
+    elif args.dataset == 'banking77__4':
+        if args.train_eval_sample in ['train','sample_train']:
+            df_train = pd.read_csv('datasets/banking77__4/train.csv', names=['text','label'], index_col=False)
+        else:
+            df_test = pd.read_csv('datasets/banking77__4/test.csv', names=['text','label'], index_col=False)
+    elif args.dataset == 'banking77__5':
+        if args.train_eval_sample in ['train','sample_train']:
+            df_train = pd.read_csv('datasets/banking77__5/train.csv', names=['text','label'], index_col=False)
+        else:
+            df_test = pd.read_csv('datasets/banking77__5/test.csv', names=['text','label'], index_col=False)
+    elif args.dataset == 'banking77__10':
+        if args.train_eval_sample in ['train','sample_train']:
+            df_train = pd.read_csv('datasets/banking77__10/train.csv', names=['text','label'], index_col=False)
+        else:
+            df_test = pd.read_csv('datasets/banking77__10/test.csv', names=['text','label'], index_col=False)
+    elif args.dataset == 'banking77__14':
+        if args.train_eval_sample in ['train','sample_train']:
+            df_train = pd.read_csv('datasets/banking77__14/train.csv', names=['text','label'], index_col=False)
+        else:
+            df_test = pd.read_csv('datasets/banking77__14/test.csv', names=['text','label'], index_col=False)
+    elif args.dataset == 'tweet_eval_emoji_2':
+        if args.train_eval_sample in ['train','sample_train']:
+            df_train = pd.read_csv('datasets/tweet_eval_emoji_2/train.csv', names=['text','label'], index_col=False)
+        else:
+            df_test = pd.read_csv('datasets/tweet_eval_emoji_2/test.csv', names=['text','label'], index_col=False)
+    elif args.dataset == 'tweet_eval_emoji_4':
+        if args.train_eval_sample in ['train','sample_train']:
+            df_train = pd.read_csv('datasets/tweet_eval_emoji_4/train.csv', names=['text','label'], index_col=False)
+        else:
+            df_test = pd.read_csv('datasets/tweet_eval_emoji_4/test.csv', names=['text','label'], index_col=False)
+    elif args.dataset == 'tweet_eval_emoji_5':
+        if args.train_eval_sample in ['train','sample_train']:
+            df_train = pd.read_csv('datasets/tweet_eval_emoji_5/train.csv', names=['text','label'], index_col=False)
+        else:
+            df_test = pd.read_csv('datasets/tweet_eval_emoji_5/test.csv', names=['text','label'], index_col=False)
+    elif args.dataset == 'tweet_eval_emoji_10':
+        if args.train_eval_sample in ['train','sample_train']:
+            df_train = pd.read_csv('datasets/tweet_eval_emoji_10/train.csv', names=['text','label'], index_col=False)
+        else:
+            df_test = pd.read_csv('datasets/tweet_eval_emoji_10/test.csv', names=['text','label'], index_col=False)
+    elif args.dataset == 'tweet_eval_emoji_14':
+        if args.train_eval_sample in ['train','sample_train']:
+            df_train = pd.read_csv('datasets/tweet_eval_emoji_14/train.csv', names=['text','label'], index_col=False)
+        else:
+            df_test = pd.read_csv('datasets/tweet_eval_emoji_14/test.csv', names=['text','label'], index_col=False)
     
+    if args.train_eval_sample in ['train','sample_train']:
+        df_train['label'] = df_train['label'].astype('int64')
+    else:
+        df_test['label'] = df_test['label'].astype('int64')
+
     if args.train_eval_sample == 'sample_train':
         index_lst = sample(range(len(df_train[['label','text']][df_train.notnull().all(1)].index)),args.limit_train+args.limit_test)
         shuffle(index_lst)
@@ -80,4 +135,3 @@ def load_dataset(args, train_index=None, test_index=None):
            df_train[['label','text']][df_train.notnull().all(1)].iloc[test_index].reset_index(drop=True)
     elif args.train_eval_sample == 'eval':
         return df_test[['label','text']][df_test.notnull().all(1)].iloc[test_index].reset_index(drop=True)
-        

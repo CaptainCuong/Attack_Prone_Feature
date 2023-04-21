@@ -20,8 +20,10 @@ class MyClassifier(OpenAttack.Classifier):
                 input_sent = {key:value.to(self.device) for key, value in input_sent.items()}
                 res = self.model(**input_sent).logits.argmax(axis=1)
             elif self.model_name == 'char_cnn':
-                input_sent = self.tokenizer(input_[0])
-                input_sent = torch.tensor(input_sent, device=self.device, dtype=torch.float).unsqueeze(0)
+                input_sent = self.tokenizer(input_)
+                input_sent = torch.tensor(input_sent, device=self.device, dtype=torch.float)
+                if len(input_sent.shape) == 2:
+                    input_sent = input_sent.unsqueeze(0)
                 res = self.model(input_sent).argmax(axis=1)
             else:
                 input_ = self.tokenizer(input_, padding = 'max_length', truncation=True)

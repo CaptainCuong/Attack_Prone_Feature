@@ -1,0 +1,3 @@
+,Average number of tokens,Number of unique tokens,Minimum number of tokens,Maximum number of tokens,Mean distance,Fisher ratio,CalHara Index,DaBou Index,Number of cluster,Pearson Med,Kurtosis,Misclassification rate,Number of classes,Groundtruth_ASR,Predicted_ASR
+91,186.1366667,9047,3,1376,0.323601378,1.493842242,334.2472017,1.927890697,2,1.174170546,1.825529844,0.89,5,0.8200000000000001,0.839880345911909
+124,190.88,9138,4,1213,0.326768683,1.480430773,331.2463854,1.719390643,2,0.0,1.67731569,0.85,5,0.85,0.8392424742406555

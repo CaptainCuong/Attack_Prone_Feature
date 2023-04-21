@@ -97,6 +97,7 @@ class CharacterLevelCNN(nn.Module):
         x = self.fc1(x)
         x = self.fc2(x)
         x = self.fc3(x)
+
         return x
 
 class CharCNNTokenizer():
@@ -105,14 +106,26 @@ class CharCNNTokenizer():
         self.number_of_characters = args.number_of_characters
         self.max_length_char_cnn = args.max_length_char_cnn
         self.identity_mat = np.identity(self.number_of_characters)
-        
-    def __call__(self, raw_text):
+    
+    def __call__(self, inputs):
+        if type(inputs) is str:
+            return self.tkn_str(inputs)
+        elif type(inputs) is list:
+            ret = []
+            for input_str in inputs:
+                ret.append(self.tkn_str(input_str))
+            return ret
+        else:
+            raise Exception('Ambiguous type') 
+
+    def tkn_str(self, raw_text):
         assert type(raw_text) is str
+
         data = np.array(
             [
-                self.identity_mat[self.vocabulary.index(i)]
-                for i in list(raw_text)[::-1]
-                if i in self.vocabulary
+                self.identity_mat[self.vocabulary.index(char)]
+                for char in list(raw_text.lower())[::-1]
+                if char in self.vocabulary
             ],
             dtype=np.float32,
         )
@@ -124,7 +137,8 @@ class CharCNNTokenizer():
             ], 
             dtype=np.float32
         )
-        ret[:data.shape[0]] = data[:ret.shape[0]]
-
+        if len(data.shape) == 2:
+            ret[:data.shape[0]] = data[:ret.shape[0]]
+        
         return ret.tolist()
 

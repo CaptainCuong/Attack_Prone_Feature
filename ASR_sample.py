@@ -27,10 +27,15 @@ args.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dataset_lst = {'amazon_review_full':5,
                'amazon_review_polarity':2,'dbpedia':14,
                'yahoo_answers':10,'ag_news':4,
-               'yelp_review_full':5,'yelp_review_polarity':2}
+               'yelp_review_full':5,'yelp_review_polarity':2,
+               'banking77__2':2, 'banking77__4':4, 'banking77__5':5, 
+               'banking77__10':10, 'banking77__14':14,
+               'tweet_eval_emoji_2':2, 'tweet_eval_emoji_4':4, 'tweet_eval_emoji_5':5, 
+               'tweet_eval_emoji_10':10, 'tweet_eval_emoji_14':14,
+              }
 
 if __name__ == '__main__':
-    file = open("generated_data/data.csv", "a")
+    file = open("generated_data/data_test.csv", "a")
     
     args.train_eval_sample = 'train'
     with open(f'generated_data/dataset_{args.chunk}.txt', 'r') as f:

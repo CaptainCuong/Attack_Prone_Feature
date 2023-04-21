@@ -20,13 +20,16 @@ def parse_train_args():
                                             'rnn','birnn'])
     parser.add_argument('--max_length', type=int, default=512, help='Folder in which to save model and logs')
     parser.add_argument('--chunk', type=int, help='Chunk of dataset used for generating data')
-    parser.add_argument('--sample', type=str, default='data_info', 
+    parser.add_argument('--sample', type=str, default='sub_dataset', 
                                     choices=['sub_dataset','data_info'],
                                     help='Chunk of dataset used for generating data')
     parser.add_argument('--attack_type', type=str, default='TextFooler',
                                     nargs='+',
                                     choices=['TextFooler','PWWS','DeepWordBug','BERT'],
                                     help='Attacker used for evaluation')
+
+    # Arguments for generate 
+    parser.add_argument('--data_write_file', type=str, default='./test_run', help='Folder in which to save model and logs')
 
     # Training arguments
     parser.add_argument('--batch_size', type=int, default=3, help='batch_size for training')    

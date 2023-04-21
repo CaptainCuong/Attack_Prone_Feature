@@ -29,9 +29,11 @@ datasets/sogou_news/*.gz
 datasets/yahoo_answers/*.gz
 datasets/yelp_review_full/*.gz
 datasets/yelp_review_polarity/*.gz
+datasets/*
 generated_data/dataset*
 generated_data/train_index*
 generated_data/test_index*
+generated_data/*
 wandb
 test_run/*
 find_keywords.py
