@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 import os
 
-def parse_train_args():
+def parse_train_args(visualize=False):
     
     # General arguments
     parser = ArgumentParser()
@@ -17,12 +17,12 @@ def parse_train_args():
                                    help='Model for training or evaluation',
                                    choices=['roberta-base','char_cnn','word_cnn',
                                             'bert-base','bilstm','lstm',
-                                            'rnn','birnn'])
+                                            'rnn','birnn','distilroberta-base'])
     parser.add_argument('--max_length', type=int, default=512, help='Folder in which to save model and logs')
     parser.add_argument('--chunk', type=int, help='Chunk of dataset used for generating data')
     parser.add_argument('--sample', type=str, default='sub_dataset', 
                                     choices=['sub_dataset','data_info'],
-                                    help='Chunk of dataset used for generating data')
+                                    help='Chunk of dataset used for generating data', required=not visualize)
     parser.add_argument('--attack_type', type=str, default='TextFooler',
                                     nargs='+',
                                     choices=['TextFooler','PWWS','DeepWordBug','BERT'],
@@ -30,6 +30,8 @@ def parse_train_args():
 
     # Arguments for generate 
     parser.add_argument('--data_write_file', type=str, default='./test_run', help='Folder in which to save model and logs')
+    parser.add_argument('--start-end', type=int, nargs='+', help='Start and end examples for generating data', required=not visualize)
+    parser.add_argument('--generated-data-file', type=str, help='Folder containing generated data', required=not visualize)
 
     # Training arguments
     parser.add_argument('--batch_size', type=int, default=3, help='batch_size for training')    
@@ -63,7 +65,7 @@ def parse_train_args():
 
     args = parser.parse_args()
 
-    check_constraint(args)    
+    check_constraint(args,visualize)    
     add_load_dir(args)
 
     if args.model == 'char_cnn':
@@ -99,7 +101,11 @@ def add_load_dir(args):
     max_length = args.max_length if args.model != 'char_cnn' else args.max_length_char_cnn
     args.load_dir = os.path.join(args.log_dir, args.model) + f'_{max_length}'
 
-def check_constraint(args):
+def check_constraint(args,visualize=False):
+    if not visualize:
+        assert len(args.start_end) == 2, ''
+        assert args.start_end[0] < args.start_end[1], ''
+
     if args.model == 'char_cnn':
         if args.max_length_char_cnn != 1024:
             raise Exception('Wrong max length for char_cnn, should be 1024')
@@ -118,7 +124,7 @@ def check_constraint(args):
     else:
         if args.max_length != 512:
             raise Exception('Wrong max length, should be 512')
-    if args.model in ['roberta-base','bert-base']:
+    if args.model in ['roberta-base','bert-base','distilroberta-base']:
         if args.batch_size > 5:
             raise Exception('Out of memory warning')
         if args.epoches > 15:

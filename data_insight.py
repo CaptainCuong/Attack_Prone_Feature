@@ -24,7 +24,7 @@ device = cuda.get_current_device()
 args.train_eval_sample = 'train'
 tokenizer = AutoTokenizer.from_pretrained('bert-base-cased',model_max_length=args.max_length)
 embed_model = hub.load('https://tfhub.dev/google/universal-sentence-encoder/4')
-file = open("generated_data/data_test.csv", "a")
+file = open(args.generated_data_file, "a")
 index = args.chunk
 dataset_lst = {'amazon_review_full':5,
                'amazon_review_polarity':2,'dbpedia':14,

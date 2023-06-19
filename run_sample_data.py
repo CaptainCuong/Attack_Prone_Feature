@@ -17,11 +17,13 @@ dataset_lst = [('amazon_review_full',5),
               ]
 
 args = parse_train_args()
+start_sample = args.start_end[0]
+end_sample = args.start_end[1]
 
 if args.sample == 'sub_dataset':
     args.train_eval_sample = 'sample_train'
     logging.info('Sample sub-datasets')
-    for i in tqdm(range(250)):
+    for i in tqdm(range(start_sample, end_sample)):
         args.dataset, args.number_of_class = random.choices(dataset_lst,weights = [5, 
                                                                                   1,5,
                                                                                   1,5,
@@ -58,17 +60,21 @@ if args.sample == 'sub_dataset':
             np.save(f, np.array(test_index))
 
 elif args.sample == 'data_info':
-    with open("generated_data/data_test.csv", "w") as file:
+    with open(args.generated_data_file, "w") as file:
         file.write('Index,Dataset,Average number of tokens,Number of unique tokens,Minimum number of tokens,Maximum number of tokens,\
 Mean distance,Fisher ratio,CalHara Index,DaBou Index,Number of cluster,Pearson Med,Number of labels,Kurtosis,Misclassification rate,\
 Number of classes,ASR_TextFooler,ASR_PWWS,ASR_BERT,ASR_DeepWordBug\n')
-    for i in tqdm(range(250)):
-        # call(["python", "data_insight.py",'--chunk',f'{i}'])
-        call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','TextFooler','PWWS'])
-        call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','BERT','DeepWordBug'])
+    required_info = ['--sample', args.sample, 
+                     '--start-end', str(args.start_end[0]), str(args.start_end[1]), 
+                     '--generated-data-file', args.generated_data_file,
+                     '--model', args.model]
+    for i in tqdm(range(start_sample, end_sample)):
+        # call(["python", "data_insight.py",'--chunk',f'{i}']+required_info)
+        call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','TextFooler','PWWS']+required_info)
+        call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','BERT','DeepWordBug']+required_info)
         # call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','PWWS'])
         # call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','BERT'])
         # call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','DeepWordBug'])
         # call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','TextFooler'])
-        with open("generated_data/data_test.csv", "a") as file:
+        with open(args.generated_data_file, "a") as file:
             file.write('\n')

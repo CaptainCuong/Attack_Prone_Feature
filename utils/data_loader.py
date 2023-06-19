@@ -40,5 +40,5 @@ def construct_loader(args, dataset):
     data = MyDataset(args, input_ids, labels)
     return DataLoader(dataset=data,
                       batch_size=args.batch_size,
-                      pin_memory=True,
+                      pin_memory=False,
                       shuffle=True)

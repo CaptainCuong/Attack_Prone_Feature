@@ -16,287 +16,559 @@ from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error,r2_score,mean_absolute_error,explained_variance_score,\
                             mean_absolute_percentage_error
 from sklearn.linear_model import LinearRegression
+from sklearn.neural_network import MLPRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 import itertools
 from sklearn.inspection import permutation_importance
-from PyALE import ale
+from utils.PyALE import ale
 import statsmodels.api as sm
+import random
+from statistics import mean 
 
+pylab.rcParams['font.size'] = 30
 datasets = ['amazon_review_full', # 18
-           'amazon_review_polarity','dbpedia', # 56, 71
-           'yahoo_answers','ag_news', # 11, 49
-           'yelp_review_full','yelp_review_polarity'] # 2, 69
+            'amazon_review_polarity','dbpedia', # 56, 71
+            'yahoo_answers','ag_news', # 11, 49
+            'yelp_review_full','yelp_review_polarity', # 2, 69
+            'banking77__2', 'banking77__4', 'banking77__5', # 2, 5, 3
+            'banking77__10', 'banking77__14', # 4, 3
+            'tweet_eval_emoji_2', 'tweet_eval_emoji_4', 'tweet_eval_emoji_5', # 4, 1, 3
+            'tweet_eval_emoji_10', 'tweet_eval_emoji_14' # 5, 2
+           ]
 attackers = ['ASR_TextFooler','ASR_PWWS','ASR_BERT','ASR_DeepWordBug']
 
-file = pd.read_csv('data_test.csv',sep=',')
-file = file[file.notnull().all(1)]
+# file name: ['data_roberta.csv','data_test.csv']
+file_name = 'data_roberta.csv' 
+file = pd.read_csv(file_name,sep=',')
+model = '_bert' if file_name == 'data_test.csv' else '_distil_roberta'
+
+file = file[file.notnull().all(1)].drop(columns='ASR_BERT')
 file = file[(file!='Nan').all(1)]
 file.drop(columns=['Index','Number of labels'],inplace=True)
-file = file.astype({'ASR_BERT': 'float64','ASR_DeepWordBug': 'float64'})
-file['ASR']=(file['ASR_TextFooler']+file['ASR_PWWS']+file['ASR_BERT']+file['ASR_DeepWordBug'])/4
-# file = file.sample(frac=1)
+file = file.astype({'ASR_DeepWordBug': 'float64','ASR_PWWS': 'float64','ASR_TextFooler': 'float64'})
+file['ASR']=(file['ASR_TextFooler']+file['ASR_PWWS']+file['ASR_DeepWordBug'])/3
+file['Fisher ratio'] = file['Fisher ratio'].apply(lambda x:1/x)
+# file.rename(columns = {'Fisher ratio':'Fisher’s Discriminant Ratio', 'CalHara Index':'Calinski-Harabasz Index',
+#                        'DaBou Index':'Davies-Bouldin Index', 'Pearson Med':'Pearson Median Skewness',
+#                        'Mean distance':'Mean Distance between Clusters'}, inplace = True)
+file.rename(columns = {'Fisher ratio':'FR', 'CalHara Index':'CHI',
+                       'DaBou Index':'DBI', 'Pearson Med':'PMS',
+                       'Mean distance':'MD', 'Minimum number of tokens': 'Min # tokens',
+                       'Maximum number of tokens': 'Max # tokens', 'Number of cluster': '# clusters', 'Kurtosis': 'KTS',
+                       'Average number of tokens': 'Avg. # tokens', 'Number of unique tokens': '# unique tokens',
+                       'Misclassification rate': 'MR', 'Number of classes': '# classes'}, inplace = True)
 
+print('*-'*100)
 print('Extrapolation test')
-print('-'*100)
-for dataset in datasets:
-    print('*-'*50)
-    print(f'Test on masking dataset {dataset}')
-    train = file[file['Dataset']!=dataset].drop(columns='Dataset')
-    train.drop(columns=['ASR_TextFooler','ASR_PWWS','ASR_BERT','ASR_DeepWordBug'],inplace=True)
-    test = file[file['Dataset']==dataset].drop(columns='Dataset')
-    test.drop(columns=['ASR_TextFooler','ASR_PWWS','ASR_BERT','ASR_DeepWordBug'],inplace=True)
+file.drop(columns=['ASR_TextFooler','ASR_PWWS','ASR_DeepWordBug'],inplace=True)
+
+def convert_dataset(x):
+    if x[:5]=='banki':
+        return 'banking77'
+    elif x[:5]=='tweet':
+        return 'tweet_eval_emoji'
+    return x
+
+file['Dataset'] = file['Dataset'].map(convert_dataset)
+datasets = [
+            'amazon_review_full', # 18
+            'amazon_review_polarity','dbpedia', # 56, 71
+            'yahoo_answers','ag_news', # 11, 49
+            'yelp_review_full','yelp_review_polarity', # 2, 69
+            'banking77', 'tweet_eval_emoji'
+           ]
+split_specified = False
+exclude_dbpedia = False
+random_train_val = True
+r2_threshold = 0
+min_iters = 200
+split_interval = (0,5,7,9)
+# train_dataset = ['yelp_review_full', 'yelp_review_polarity', 'banking77', 'ag_news']
+# val_dataset = ['dbpedia']
+test_dataset = ['amazon_review_polarity', 'amazon_review_full', 'yahoo_answers', 'tweet_eval_emoji']
+train_dataset = ['dbpedia', 'ag_news', 'banking77', 'yelp_review_polarity']
+val_dataset = ['amazon_review_polarity']
+test_dataset = ['yahoo_answers', 'amazon_review_full', 'yelp_review_full', 'tweet_eval_emoji']
+
+############### Extrapolation Experiment ###############
+rmse_gb,rmse_mlp,rmse_lr,rmse_rf = [],[],[],[]
+r2_gb,r2_mlp,r2_lr,r2_rf = [],[],[],[]
+mae_gb,mae_mlp,mae_lr,mae_rf = [],[],[],[]
+evs_gb,evs_mlp,evs_lr,evs_rf = [],[],[],[]
+mape_gb,mape_mlp,mape_lr,mape_rf = [],[],[],[]
+ale_func_extra = None
+base_r2 = -1000
+ale_extra_x_test, ale_extra_y_test = None, None
+for t in itertools.count():
+    random.shuffle(datasets)
+    if 'dbpedia' in datasets[split_interval[2]:split_interval[3]]:
+        continue
+    data_examine = [-1]
+    if split_specified:
+        data_train_val = file[file['Dataset'].isin(train_dataset+val_dataset)]
+    elif exclude_dbpedia:
+        data_train_val = file[file['Dataset'].isin(datasets[split_interval[0]:split_interval[2]])][file['Dataset']!='dbpedia']
+    else:
+        data_train_val = file[file['Dataset'].isin(datasets[split_interval[0]:split_interval[2]])]
     
-    # linear regression
-    x = sm.add_constant(train.drop(columns='ASR'))
-    y = train['ASR']
-    model = sm.OLS(y, x).fit()
-    # print(model.summary())
-
-    # LGBMR
-    x_train, x_val, y_train, y_val = train_test_split(train.drop(columns='ASR'), np.array(train['ASR']), test_size = 0.2, random_state = 0)
-    x_test, y_test = test.drop(columns='ASR'), np.array(test['ASR'])
-    final_model = lgb.LGBMRegressor(learning_rate=0.05, max_bin=400,
+    if split_specified:
+        data_test = file[file['Dataset'].isin(test_dataset)]
+    else:
+        data_test = file[file['Dataset'].isin(datasets[split_interval[2]:split_interval[3]])]
+    
+    if split_specified:
+        x_train, x_val, y_train, y_val = data_train_val[data_train_val['Dataset'].isin(train_dataset)].drop(columns='ASR'),\
+                                         data_train_val[data_train_val['Dataset'].isin(val_dataset)].drop(columns='ASR'),\
+                                         np.array(data_train_val[data_train_val['Dataset'].isin(train_dataset)]['ASR']),\
+                                         np.array(data_train_val[data_train_val['Dataset'].isin(val_dataset)]['ASR'])
+    elif random_train_val:
+        x_train, x_val, y_train, y_val = train_test_split(data_train_val.drop(columns='ASR'), np.array(data_train_val['ASR']), test_size = 0.4, random_state = 0)
+    else:
+        x_train, x_val, y_train, y_val = data_train_val[data_train_val['Dataset'].isin(datasets[split_interval[0]:split_interval[1]])].drop(columns='ASR'),\
+                                         data_train_val[data_train_val['Dataset'].isin(datasets[split_interval[1]:split_interval[2]])].drop(columns='ASR'),\
+                                         np.array(data_train_val[data_train_val['Dataset'].isin(datasets[split_interval[0]:split_interval[1]])]['ASR']),\
+                                         np.array(data_train_val[data_train_val['Dataset'].isin(datasets[split_interval[1]:split_interval[2]])]['ASR'])
+    x_test, y_test = data_test.drop(columns='ASR'), np.array(data_test['ASR'])
+    print('Train set statistics:')
+    print(datasets[split_interval[0]:split_interval[1]])
+    print(x_train['Dataset'].value_counts())
+    print('-'*50)
+    print('Val set statistics:')
+    print(datasets[split_interval[1]:split_interval[2]])
+    print(x_val['Dataset'].value_counts())
+    print('-'*50)
+    print('Test set statistics:')
+    print(datasets[split_interval[2]:split_interval[3]])
+    print(x_test['Dataset'].value_counts())
+    print('-'*50)
+    x_train, x_val, x_test = x_train.drop(columns='Dataset'), x_val.drop(columns='Dataset'), x_test.drop(columns='Dataset')
+    
+    # Gradient Boosting
+    gb_rgs = lgb.LGBMRegressor(learning_rate=0.05, max_bin=400,
                               metric='rmse', n_estimators=5000,
                               objective='regression', random_state=79,
                               )
-    final_model.fit(x_train, y_train,
+
+    gb_rgs.fit(x_train, y_train,
         eval_set = [(x_val, y_val)],
         eval_metric = ['rmse'],
         callbacks=[lgb.early_stopping(10)])
-    predicted_y = final_model.predict(x_test)
+    predicted_y = gb_rgs.predict(x_test)
     summary = {'Predicted':[],'Groundtruth':[]}
     for i in range(predicted_y.shape[0]):
         summary['Predicted'].append(predicted_y[i])
         summary['Groundtruth'].append(y_test[i])
     summary = pd.DataFrame(summary)
-    print(f'Result when masking {dataset}')
     print('RMSE: ',mean_squared_error(y_test, predicted_y,squared=False))
     print('R2: ',r2_score(y_test, predicted_y))
     print('MAE: ',mean_absolute_error(y_test, predicted_y))
     print('Explained_variance_score: ',explained_variance_score(y_test, predicted_y))
     print('MAPE: ',mean_absolute_percentage_error(y_test, predicted_y))
     print('-'*50)
-    x_test = x_test.assign(Groundtruth_ASR=y_test,Predicted_ASR=predicted_y)
-    x_test.to_csv(f'result_extrapolate_summary_{dataset}.csv')
-    print('-'*100)
-raise
-print('Interpolation test')
-file.drop(columns=['ASR_TextFooler','ASR_PWWS','ASR_BERT','ASR_DeepWordBug','Dataset'],inplace=True)
-
-x_train, x_val, y_train, y_val = train_test_split(file.drop(columns='ASR'), np.array(file['ASR']), test_size = 0.4, random_state = 0)
-linear_X_train, linear_y_train, linear_X_test, linear_y_test = x_train.to_numpy(), y_train, x_val.to_numpy(), y_val
-x_val, x_test, y_val, y_test = train_test_split(x_val, y_val, test_size = 0.2, random_state = 0)
-X = x_train.to_numpy()
-
-x = sm.add_constant(file.drop(columns='ASR'))
-y = file['ASR']
-model = sm.OLS(y, x).fit()
-print(model.summary())
-raise
-
-# Set fixed K-folds
-k_fold = KFold(n_splits=5, shuffle=True, random_state=79)
-
-grid = False
-
-if grid:
-    # Hyperparameter grid
-    param_grid = { 
-                  'feature_fraction': np.arange(0.1,1,0.1),
-                  'subsample': np.arange(0.70,0.8,0.01),
-                  'learning_rate': [0.01],
-                  'max_depth': [3,5,7,9],  
-                  'num_leaves' : np.arange(10,40,5),
-                  'n_estimators' : [3000,4000,5000,7000],
-                  'max_bin': [30,40,50,60],
-                  "lambda_l1":np.arange(0.0, 1.1, 0.2),
-                  "lambda_l2":np.arange(0.0, 1.1, 0.2),
-                  "min_gain_to_split": np.arange(0, 36, 2),
-                  }
-
-    # Parameter Tuning
-    print('Parameter tuning...')
-    lgb_est = lgb.LGBMRegressor(random_state = 79, objective = "regression", 
-                                metric = "rmse",boosting_type ='gbdt')
-    lgb_model = RandomizedSearchCV(lgb_est,param_grid, random_state = 79, n_jobs=-1, 
-                                   cv = k_fold, scoring = "neg_mean_squared_error")
-    lgb_model.fit(x_train, y_train, 
-                eval_set = [(x_train, y_train),(x_val, y_val)],
-                eval_metric = ['rmse'],
-                eval_names = ["Train","Validation"],
-                callbacks=[lgb.early_stopping(10)]
-                )
-
-    final_model = lgb_model.best_estimator_
-    plt.rcParams['figure.figsize'] = [25, 10]
-    lgb.plot_importance(final_model, max_num_features=10, xlabel = 'Value')
-else:
-    print('Interpolation test')
-    linear_model = LinearRegression(fit_intercept=True).fit(linear_X_train,linear_y_train)
-    linear_predict = linear_model.predict(linear_X_test)
-    summary = {'Predicted':[],'Groundtruth':[]}
-    for i in range(linear_predict.shape[0]):
-        summary['Predicted'].append(linear_predict[i])
-        summary['Groundtruth'].append(linear_y_test[i])
-    summary = pd.DataFrame(summary)
-    print(summary)
-    print('RMSE: ',mean_squared_error(linear_y_test, linear_predict,squared=False))
-    print('R2: ',r2_score(linear_y_test, linear_predict))
-    print('MAE: ',mean_absolute_error(linear_y_test, linear_predict))
-    print('Explained_variance_score: ',explained_variance_score(linear_y_test, linear_predict))
-    print('MAPE: ',mean_absolute_percentage_error(linear_y_test, linear_predict))
-    print('-'*50)
-
-    final_model = lgb.LGBMRegressor(learning_rate=0.05, max_bin=400,
-                              metric='rmse', n_estimators=5000,
-                              objective='regression', random_state=79,
-                              )
-    final_model.fit(x_train, y_train,
-        eval_set = [(x_val, y_val)],
-        eval_metric = ['rmse'],
-        callbacks=[lgb.early_stopping(10)])
-    predicted_y = final_model.predict(x_test)
+    rmse_gb.append(mean_squared_error(y_test, predicted_y,squared=False))
+    r2_gb.append(r2_score(y_test, predicted_y))
+    mae_gb.append(mean_absolute_error(y_test, predicted_y))
+    evs_gb.append(explained_variance_score(y_test, predicted_y))
+    mape_gb.append(mean_absolute_percentage_error(y_test, predicted_y))
+    
+    # MLP
+    x_train_skl = pd.concat([x_train,x_val])
+    y_train_skl = np.concatenate((y_train,y_val))
+    mlp_rgs = MLPRegressor(hidden_layer_sizes=(100,100), random_state=10, max_iter=5000).fit(x_train_skl, y_train_skl)
+    predicted_y = mlp_rgs.predict(x_test)
     summary = {'Predicted':[],'Groundtruth':[]}
     for i in range(predicted_y.shape[0]):
         summary['Predicted'].append(predicted_y[i])
         summary['Groundtruth'].append(y_test[i])
     summary = pd.DataFrame(summary)
-    print(summary)
     print('RMSE: ',mean_squared_error(y_test, predicted_y,squared=False))
     print('R2: ',r2_score(y_test, predicted_y))
     print('MAE: ',mean_absolute_error(y_test, predicted_y))
     print('Explained_variance_score: ',explained_variance_score(y_test, predicted_y))
     print('MAPE: ',mean_absolute_percentage_error(y_test, predicted_y))
     print('-'*50)
-    x_test = x_test.assign(Groundtruth_ASR=y_test,Predicted_ASR=predicted_y)
-    x_test.to_csv('result_summary_interpolate.csv')
+    rmse_mlp.append(mean_squared_error(y_test, predicted_y,squared=False))
+    r2_mlp.append(r2_score(y_test, predicted_y))
+    mae_mlp.append(mean_absolute_error(y_test, predicted_y))
+    evs_mlp.append(explained_variance_score(y_test, predicted_y))
+    mape_mlp.append(mean_absolute_percentage_error(y_test, predicted_y))
 
-    r = permutation_importance(final_model, x_val, y_val,
-                                n_repeats=30,
-                                random_state=0)
-    print(r.importances_mean)
+    # Linear Regression
+    ln_rgs = LinearRegression(fit_intercept=True).fit(x_train_skl,y_train_skl)
+    predicted_y = ln_rgs.predict(x_test)
+    summary = {'Predicted':[],'Groundtruth':[]}
+    for i in range(predicted_y.shape[0]):
+        summary['Predicted'].append(predicted_y[i])
+        summary['Groundtruth'].append(y_test[i])
+    summary = pd.DataFrame(summary)
+    print('RMSE: ',mean_squared_error(y_test, predicted_y,squared=False))
+    print('R2: ',r2_score(y_test, predicted_y))
+    print('MAE: ',mean_absolute_error(y_test, predicted_y))
+    print('Explained_variance_score: ',explained_variance_score(y_test, predicted_y))
+    print('MAPE: ',mean_absolute_percentage_error(y_test, predicted_y))
+    print('-'*50)
+    rmse_lr.append(mean_squared_error(y_test, predicted_y,squared=False))
+    r2_lr.append(r2_score(y_test, predicted_y))
+    mae_lr.append(mean_absolute_error(y_test, predicted_y))
+    evs_lr.append(explained_variance_score(y_test, predicted_y))
+    mape_lr.append(mean_absolute_percentage_error(y_test, predicted_y))
 
-    for i in r.importances_mean.argsort()[::-1]:
-        if r.importances_mean[i] - 2 * r.importances_std[i] > 0:
-            print(f"{file.columns[i]:<8}"
-                  f"{r.importances_mean[i]:.3f}"
-                 f" +/- {r.importances_std[i]:.3f}")
+    # Random Forest
+    rdfr_rgs = RandomForestRegressor(max_depth=20, random_state=0).fit(x_train_skl,y_train_skl)
+    predicted_y = rdfr_rgs.predict(x_test)
+    r2_rdfr = r2_score(y_test, predicted_y)
+    if r2_rdfr > base_r2:
+        ale_func_extra = rdfr_rgs
+        base_r2 = r2_rdfr
+        ale_extra_x_test, ale_extra_y_test = x_test, y_test
+    summary = {'Predicted':[],'Groundtruth':[]}
+    for i in range(predicted_y.shape[0]):
+        summary['Predicted'].append(predicted_y[i])
+        summary['Groundtruth'].append(y_test[i])
+    summary = pd.DataFrame(summary)
+    print('RMSE: ',mean_squared_error(y_test, predicted_y,squared=False))
+    print('R2: ',r2_score(y_test, predicted_y))
+    print('MAE: ',mean_absolute_error(y_test, predicted_y))
+    print('Explained_variance_score: ',explained_variance_score(y_test, predicted_y))
+    print('MAPE: ',mean_absolute_percentage_error(y_test, predicted_y))
+    print('-'*50)
+    rmse_rf.append(mean_squared_error(y_test, predicted_y,squared=False))
+    r2_rf.append(r2_score(y_test, predicted_y))
+    mae_rf.append(mean_absolute_error(y_test, predicted_y))
+    evs_rf.append(explained_variance_score(y_test, predicted_y))
+    mape_rf.append(mean_absolute_percentage_error(y_test, predicted_y))
 
-# Accumulated Local Effects (ALE)
-discrete_fts = ['Number of unique tokens',
-            'Minimum number of tokens', 'Maximum number of tokens', 'Number of cluster',
-            'Number of classes']
-continuous_fts = ['Average number of tokens', 'Mean distance', 'Fisher ratio', 
-                  'CalHara Index', 'DaBou Index', 'Pearson Med', 'Kurtosis', 
-                  'Misclassification rate']
+    if (max(r2_rf) > r2_threshold and t > min_iters) or split_specified:
+        print('Feature Importance')
+        print('*'*10)
+        
+        # Gradient Boosting FI
+        print('Gradient Boosting FI')
+        r = permutation_importance(ale_func_extra, ale_extra_x_test, ale_extra_y_test,
+                                    n_repeats=100,
+                                    random_state=0)
 
-pylab.rcParams['font.size'] = 17
-img_by_img=True
-plot=False
-if img_by_img and plot:
-    for i, ft in enumerate(discrete_fts):
-        fig = plt.figure(figsize=(10,7))
-        axis = fig.add_subplot()
-        ale_eff = ale(
-            X=x_val, model=final_model, feature=[ft], grid_size=50, 
-            feature_type='discrete' if ft in discrete_fts else 'continuous',
-            include_CI=False, fig=fig, ax=axis
-        )
-        if ft in ['Number of unique tokens','Maximum number of tokens']:
-            xticks = axis.get_xticks()
-            axis.set_xticks(xticks[::5]) # set new tick positions
-            axis.tick_params(axis='x', rotation=30) # set tick rotation
-            axis.margins(x=0) # set tight margins
-        print(f'{ft} :')
-        eff = list(ale_eff['eff'])
-        print(max(eff)-min(eff))
+        important_ind = []
+        for i in r.importances_mean.argsort()[::-1]:
+            if r.importances_mean[i] - 2 * r.importances_std[i] > 0:
+                important_ind.append(i)
+                print(f"{ale_extra_x_test.columns[i]:<8}: "
+                      f"{r.importances_mean[i]:.3f}"
+                     f" +/- {r.importances_std[i]:.3f}")
+        importances = pd.Series(r.importances_mean[important_ind], index=ale_extra_x_test.columns[important_ind])
+        fig, ax = plt.subplots(figsize=(10,15))
+        importances.plot.bar(yerr=r.importances_std[important_ind], ax=ax)
+        ax.set_title("Feature importances\nusing permutation\non the Random Forest Model")
+        ax.set_ylabel("Mean accuracy decrease")
+        ax.tick_params(axis='x', rotation=45)
         fig.tight_layout()
-        fig.savefig(f'image/interprete/{ft}.png')
-        fig.show()
+        fig.savefig(f'image/interpret/permutation/random_forest_permute_extra{model}.png')
         plt.show()
+        print('*'*10)
+        break
 
-    for i, ft in enumerate(continuous_fts):
-        fig = plt.figure(figsize=(10,7))
-        axis = fig.add_subplot()
-        ale_eff = ale(
-            X=x_val, model=final_model, feature=[ft], grid_size=50, 
-            feature_type='discrete' if ft in discrete_fts else 'continuous',
-            include_CI=False, fig=fig, ax=axis
-        )
-        print(f'{ft} :')
-        eff = list(ale_eff['eff'])
-        print(max(eff)-min(eff))
-        fig.tight_layout()
-        fig.savefig(f'image/interprete/{ft}.png')
-        fig.show()
-        plt.show()
+global_report = pd.DataFrame([[mean(rmse_gb),max(rmse_gb),min(rmse_gb),np.var(rmse_gb),
+                               mean(r2_gb),max(r2_gb),min(r2_gb),np.var(r2_gb),
+                               mean(mae_gb),max(mae_gb),min(mae_gb),np.var(mae_gb),
+                               mean(evs_gb),max(evs_gb),min(evs_gb),np.var(evs_gb),
+                               mean(mape_gb),max(mape_gb),min(mape_gb),np.var(mape_gb)], 
+                              [mean(rmse_lr),max(rmse_lr),min(rmse_lr),np.var(rmse_lr),
+                               mean(r2_lr),max(r2_lr),min(r2_lr),np.var(r2_lr),
+                               mean(mae_lr),max(mae_lr),min(mae_lr),np.var(mae_lr),
+                               mean(evs_lr),max(evs_lr),min(evs_lr),np.var(evs_lr),
+                               mean(mape_lr),max(mape_lr),min(mape_lr),np.var(mape_lr)],
+                              [mean(rmse_mlp),max(rmse_mlp),min(rmse_mlp),np.var(rmse_mlp),
+                               mean(r2_mlp),max(r2_mlp),min(r2_mlp),np.var(r2_mlp),
+                               mean(mae_mlp),max(mae_mlp),min(mae_mlp),np.var(mae_mlp),
+                               mean(evs_mlp),max(evs_mlp),min(evs_mlp),np.var(evs_mlp),
+                               mean(mape_mlp),max(mape_mlp),min(mape_mlp),np.var(mape_mlp)],
+                              [mean(rmse_rf),max(rmse_rf),min(rmse_rf),np.var(rmse_rf),
+                               mean(r2_rf),max(r2_rf),min(r2_rf),np.var(r2_rf),
+                               mean(mae_rf),max(mae_rf),min(mae_rf),np.var(mae_rf),
+                               mean(evs_rf),max(evs_rf),min(evs_rf),np.var(evs_rf),
+                               mean(mape_rf),max(mape_rf),min(mape_rf),np.var(mape_rf)]], 
+                                columns=[   'RMSE_MEAN','RMSE_MAX','RMSE_MIN','RMSE_VAR',
+                                            'R2_MEAN','R2_MAX','R2_MIN','R2_VAR',
+                                            'MAE_MEAN','MAE_MAX','MAE_MIN','MAE_VAR',
+                                            'EVS_MEAN','EVS_MAX','EVS_MIN','EVS_VAR',
+                                            'MAPE_MEAN','MAPE_MAX','MAPE_MIN','MAPE_VAR'], 
+                                index=['Gradient Boosting', 'Linear Regression', 'MLP', 'Random Forest'])
+print(global_report)
+(global_report.T).to_csv(f'result_summary_extrapolate{model}.csv')
 
-elif plot:
-    fig = plt.figure(figsize=(15,8))
-    n_col = 3
-    n_row = (len(discrete_fts)-1)//n_col+1
-    axes = [fig.add_subplot(n_row,n_col,row*n_col+col+1) for row in range(n_row) for col in range(n_col)]
-    for i, ft in enumerate(discrete_fts):
-        ale_eff = ale(
-            X=x_val, model=final_model, feature=[ft], grid_size=50, 
-            feature_type='discrete' if ft in discrete_fts else 'continuous',
-            include_CI=False, fig=fig, ax=axes[i]
-        )
-        if ft in ['Number of unique tokens','Maximum number of tokens']:
-            xticks = axes[i].get_xticks()
-            axes[i].set_xticks(xticks[::2]) # set new tick positions
-            axes[i].tick_params(axis='x', rotation=30) # set tick rotation
-            axes[i].margins(x=0) # set tight margins
+########## Accumulated Local Effects (ALE) for Extrapolation ##########
+
+discrete_fts = ['# unique tokens',
+                'Min # tokens', 'Max # tokens', '# clusters',
+                '# classes']
+continuous_fts = ['Avg. # tokens', 'MD', 'FR', 
+                  'CHI', 'DBI', 'PMS', 'KTS', 
+                  'MR']
+
+pylab.rcParams['font.size'] = 27
+for i, ft in enumerate(discrete_fts):
+    fig = plt.figure(figsize=(10,7))
+    axis = fig.add_subplot()
+    ale_eff = ale(
+        X=ale_extra_x_test, model=ale_func_extra, feature=[ft], grid_size=50, 
+        feature_type='discrete' if ft in discrete_fts else 'continuous',
+        include_CI=False, fig=fig, ax=axis
+    )
+    xticks = axis.get_xticks()
+    if ft in ['# unique tokens','Max # tokens']:
+        axis.set_xticks(xticks[::9]) # set new tick positions
+        axis.tick_params(axis='x', rotation=30) # set tick rotation
+        axis.margins(x=0) # set tight margins
+    elif ft in ['Min # tokens']:
+        axis.set_xticks(xticks[::2]) # set new tick positions
+    print(f'{ft} :')
+    eff = list(ale_eff['eff'])
+    print(max(eff)-min(eff))
     fig.tight_layout()
+    fig.savefig(f'image/interpret/ale/{ft.replace("#","num")}_extra{model}.png')
     fig.show()
     plt.show()
 
-
-    fig = plt.figure(figsize=(15,10))
-    n_col = 3
-    n_row = (len(continuous_fts)-1)//n_col+1
-    axes = [fig.add_subplot(n_row,n_col,row*n_col+col+1) for row in range(n_row) for col in range(n_col)]
-    for i, ft in enumerate(continuous_fts):
-        ale_eff = ale(
-            X=x_val, model=final_model, feature=[ft], grid_size=50, 
-            feature_type='discrete' if ft in discrete_fts else 'continuous',
-            include_CI=False, fig=fig, ax=axes[i]
-        )
+for i, ft in enumerate(continuous_fts):
+    fig = plt.figure(figsize=(10,7))
+    axis = fig.add_subplot()
+    ale_eff = ale(
+        X=ale_extra_x_test, model=ale_func_extra, feature=[ft], grid_size=50, 
+        feature_type='discrete' if ft in discrete_fts else 'continuous',
+        include_CI=False, fig=fig, ax=axis
+    )
+    print(f'{ft} :')
+    eff = list(ale_eff['eff'])
+    print(max(eff)-min(eff))
     fig.tight_layout()
+    fig.savefig(f'image/interpret/ale/{ft.replace("#","num")}_extra{model}.png')
     fig.show()
     plt.show()
 
+############### Interpolation Experiment ###############
+pylab.rcParams['font.size'] = 30
 
-# fig = plt.figure(figsize=(15,10))
-# db_ctns_fts = [(ft1,ft2) for ft1, ft2 in list(itertools.product(continuous_fts,continuous_fts)) if ft1!=ft2][:12]
-# n_col = 3
-# n_row = (len(db_ctns_fts)-1)//n_col+1
-# axes = [fig.add_subplot(n_row,n_col,row*n_col+col+1) for row in range(n_row) for col in range(n_col)]
-# for i, (ft1, ft2) in enumerate(db_ctns_fts):
-#     if ft1 == ft2:
-#         continue
-#     ale_eff = ale(
-#         X=x_test, model=final_model, feature=[ft1,ft2], grid_size=50, 
-#         feature_type='discrete',
-#         include_CI=False, fig=fig, ax=axes[i]
-#     )
-# fig.tight_layout()
-# fig.show()
-# plt.show()
+print('-*'*100)
+print('Interpolation Experiment')
+file.drop(columns=['Dataset'],inplace=True)
 
-# x_test=(x_test-x_test.min())/(x_test.max()-x_test.min())
-# db_ctns_fts = [(ft1,ft2) for ft1, ft2 in list(itertools.product(continuous_fts,continuous_fts)) if ft1!=ft2][:12]
-# for i, (ft1, ft2) in enumerate(db_ctns_fts):
-#     if ft1 == ft2:
-#         continue
-#     fig = plt.figure(figsize=(15,10))
-#     axis = fig.add_subplot()
-#     ale_eff = ale(
-#         X=x_test, model=final_model, feature=[ft1,ft2], grid_size=50, 
-#         feature_type='discrete',
-#         include_CI=False, fig=fig, ax=axis
-#     )
-#     fig.tight_layout()
-#     fig.show()
-#     plt.show()
+r2_threshold = 0.3
+min_iters = 200
+ale_func_inter = None
+base_r2 = -1000
+ale_inter_x_test, ale_inter_y_test = None, None
+rmse_gb,rmse_mlp,rmse_lr,rmse_rf = [],[],[],[]
+r2_gb,r2_mlp,r2_lr,r2_rf = [],[],[],[]
+mae_gb,mae_mlp,mae_lr,mae_rf = [],[],[],[]
+evs_gb,evs_mlp,evs_lr,evs_rf = [],[],[],[]
+mape_gb,mape_mlp,mape_lr,mape_rf = [],[],[],[]
+for t in itertools.count():
+    file = file.sample(frac=1)
+    x_train, x_val, y_train, y_val = train_test_split(file.drop(columns='ASR'), np.array(file['ASR']), test_size = 0.4, random_state = 0)
+    x_val, x_test, y_val, y_test = train_test_split(x_val, y_val, test_size = 0.2, random_state = 0)
+    
+    # Gradient Boosting
+    gb_rgs = lgb.LGBMRegressor(learning_rate=0.05, max_bin=400,
+                              metric='rmse', n_estimators=5000,
+                              objective='regression', random_state=79,
+                              )
+
+    gb_rgs.fit(x_train, y_train,
+        eval_set = [(x_val, y_val)],
+        eval_metric = ['rmse'],
+        callbacks=[lgb.early_stopping(10)])
+    predicted_y = gb_rgs.predict(x_test)
+    summary = {'Predicted':[],'Groundtruth':[]}
+    for i in range(predicted_y.shape[0]):
+        summary['Predicted'].append(predicted_y[i])
+        summary['Groundtruth'].append(y_test[i])
+    summary = pd.DataFrame(summary)
+    print('RMSE: ',mean_squared_error(y_test, predicted_y,squared=False))
+    print('R2: ',r2_score(y_test, predicted_y))
+    print('MAE: ',mean_absolute_error(y_test, predicted_y))
+    print('Explained_variance_score: ',explained_variance_score(y_test, predicted_y))
+    print('MAPE: ',mean_absolute_percentage_error(y_test, predicted_y))
+    print('-'*50)
+    rmse_gb.append(mean_squared_error(y_test, predicted_y,squared=False))
+    r2_gb.append(r2_score(y_test, predicted_y))
+    mae_gb.append(mean_absolute_error(y_test, predicted_y))
+    evs_gb.append(explained_variance_score(y_test, predicted_y))
+    mape_gb.append(mean_absolute_percentage_error(y_test, predicted_y))
+    
+    # MLP
+    x_train_skl = pd.concat([x_train,x_val])
+    y_train_skl = np.concatenate((y_train,y_val))
+    mlp_rgs = MLPRegressor(hidden_layer_sizes=(100,100), random_state=10, max_iter=5000).fit(x_train_skl, y_train_skl)
+    predicted_y = mlp_rgs.predict(x_test)
+    summary = {'Predicted':[],'Groundtruth':[]}
+    for i in range(predicted_y.shape[0]):
+        summary['Predicted'].append(predicted_y[i])
+        summary['Groundtruth'].append(y_test[i])
+    summary = pd.DataFrame(summary)
+    print('RMSE: ',mean_squared_error(y_test, predicted_y,squared=False))
+    print('R2: ',r2_score(y_test, predicted_y))
+    print('MAE: ',mean_absolute_error(y_test, predicted_y))
+    print('Explained_variance_score: ',explained_variance_score(y_test, predicted_y))
+    print('MAPE: ',mean_absolute_percentage_error(y_test, predicted_y))
+    print('-'*50)
+    rmse_mlp.append(mean_squared_error(y_test, predicted_y,squared=False))
+    r2_mlp.append(r2_score(y_test, predicted_y))
+    mae_mlp.append(mean_absolute_error(y_test, predicted_y))
+    evs_mlp.append(explained_variance_score(y_test, predicted_y))
+    mape_mlp.append(mean_absolute_percentage_error(y_test, predicted_y))
+
+    # Linear Regression
+    ln_rgs = LinearRegression(fit_intercept=True).fit(x_train_skl,y_train_skl)
+    predicted_y = ln_rgs.predict(x_test)
+    summary = {'Predicted':[],'Groundtruth':[]}
+    for i in range(predicted_y.shape[0]):
+        summary['Predicted'].append(predicted_y[i])
+        summary['Groundtruth'].append(y_test[i])
+    summary = pd.DataFrame(summary)
+    print('RMSE: ',mean_squared_error(y_test, predicted_y,squared=False))
+    print('R2: ',r2_score(y_test, predicted_y))
+    print('MAE: ',mean_absolute_error(y_test, predicted_y))
+    print('Explained_variance_score: ',explained_variance_score(y_test, predicted_y))
+    print('MAPE: ',mean_absolute_percentage_error(y_test, predicted_y))
+    print('-'*50)
+    rmse_lr.append(mean_squared_error(y_test, predicted_y,squared=False))
+    r2_lr.append(r2_score(y_test, predicted_y))
+    mae_lr.append(mean_absolute_error(y_test, predicted_y))
+    evs_lr.append(explained_variance_score(y_test, predicted_y))
+    mape_lr.append(mean_absolute_percentage_error(y_test, predicted_y))
+
+    # Random Forest
+    rdfr_rgs = RandomForestRegressor(max_depth=20, random_state=0).fit(x_train_skl,y_train_skl)
+    predicted_y = rdfr_rgs.predict(x_test)
+    r2_rdfr = r2_score(y_test, predicted_y)
+    if r2_rdfr > base_r2:
+        ale_func_inter = rdfr_rgs
+        base_r2 = r2_rdfr
+        ale_inter_x_test, ale_inter_y_test = x_test, y_test
+    summary = {'Predicted':[],'Groundtruth':[]}
+    for i in range(predicted_y.shape[0]):
+        summary['Predicted'].append(predicted_y[i])
+        summary['Groundtruth'].append(y_test[i])
+    summary = pd.DataFrame(summary)
+    print('RMSE: ',mean_squared_error(y_test, predicted_y,squared=False))
+    print('R2: ',r2_score(y_test, predicted_y))
+    print('MAE: ',mean_absolute_error(y_test, predicted_y))
+    print('Explained_variance_score: ',explained_variance_score(y_test, predicted_y))
+    print('MAPE: ',mean_absolute_percentage_error(y_test, predicted_y))
+    print('-'*50)
+    rmse_rf.append(mean_squared_error(y_test, predicted_y,squared=False))
+    r2_rf.append(r2_score(y_test, predicted_y))
+    mae_rf.append(mean_absolute_error(y_test, predicted_y))
+    evs_rf.append(explained_variance_score(y_test, predicted_y))
+    mape_rf.append(mean_absolute_percentage_error(y_test, predicted_y))
+
+    # Export results to CSV file
+    if (max(r2_rf) > r2_threshold and t > min_iters):
+        print('Feature Importance')
+        print('*'*10)
+        
+        # Gradient Boosting FI
+        print('Gradient Boosting FI')
+        r = permutation_importance(ale_func_inter, ale_inter_x_test, ale_inter_y_test,
+                                    n_repeats=100,
+                                    random_state=0)
+
+        important_ind = []
+        for i in r.importances_mean.argsort()[::-1]:
+            if r.importances_mean[i] - 2 * r.importances_std[i] > 0:
+                important_ind.append(i)
+                print(f"{ale_inter_x_test.columns[i]:<8}: "
+                      f"{r.importances_mean[i]:.3f}"
+                     f" +/- {r.importances_std[i]:.3f}")
+        importances = pd.Series(r.importances_mean[important_ind], index=ale_inter_x_test.columns[important_ind])
+        fig, ax = plt.subplots(figsize=(10,15))
+        importances.plot.bar(yerr=r.importances_std[important_ind], ax=ax)
+        ax.set_title("Feature importances\nusing permutation\non the Random Forest Model")
+        ax.set_ylabel("Mean accuracy decrease")
+        ax.tick_params(axis='x', rotation=45)
+        fig.tight_layout()
+        fig.savefig(f'image/interpret/permutation/random_forest_permute_inter{model}.png')
+        plt.show()
+        print('*'*10)
+        break
+
+global_report = pd.DataFrame([[mean(rmse_gb),max(rmse_gb),min(rmse_gb),np.var(rmse_gb),
+                               mean(r2_gb),max(r2_gb),min(r2_gb),np.var(r2_gb),
+                               mean(mae_gb),max(mae_gb),min(mae_gb),np.var(mae_gb),
+                               mean(evs_gb),max(evs_gb),min(evs_gb),np.var(evs_gb),
+                               mean(mape_gb),max(mape_gb),min(mape_gb),np.var(mape_gb)], 
+                              [mean(rmse_lr),max(rmse_lr),min(rmse_lr),np.var(rmse_lr),
+                               mean(r2_lr),max(r2_lr),min(r2_lr),np.var(r2_lr),
+                               mean(mae_lr),max(mae_lr),min(mae_lr),np.var(mae_lr),
+                               mean(evs_lr),max(evs_lr),min(evs_lr),np.var(evs_lr),
+                               mean(mape_lr),max(mape_lr),min(mape_lr),np.var(mape_lr)],
+                              [mean(rmse_mlp),max(rmse_mlp),min(rmse_mlp),np.var(rmse_mlp),
+                               mean(r2_mlp),max(r2_mlp),min(r2_mlp),np.var(r2_mlp),
+                               mean(mae_mlp),max(mae_mlp),min(mae_mlp),np.var(mae_mlp),
+                               mean(evs_mlp),max(evs_mlp),min(evs_mlp),np.var(evs_mlp),
+                               mean(mape_mlp),max(mape_mlp),min(mape_mlp),np.var(mape_mlp)],
+                              [mean(rmse_rf),max(rmse_rf),min(rmse_rf),np.var(rmse_rf),
+                               mean(r2_rf),max(r2_rf),min(r2_rf),np.var(r2_rf),
+                               mean(mae_rf),max(mae_rf),min(mae_rf),np.var(mae_rf),
+                               mean(evs_rf),max(evs_rf),min(evs_rf),np.var(evs_rf),
+                               mean(mape_rf),max(mape_rf),min(mape_rf),np.var(mape_rf)]], 
+                                columns=[   'RMSE_MEAN','RMSE_MAX','RMSE_MIN','RMSE_VAR',
+                                            'R2_MEAN','R2_MAX','R2_MIN','R2_VAR',
+                                            'MAE_MEAN','MAE_MAX','MAE_MIN','MAE_VAR',
+                                            'EVS_MEAN','EVS_MAX','EVS_MIN','EVS_VAR',
+                                            'MAPE_MEAN','MAPE_MAX','MAPE_MIN','MAPE_VAR'], 
+                                index=['Gradient Boosting', 'Linear Regression', 'MLP', 'Random Forest'])
+print(global_report)
+(global_report.T).to_csv(f'result_summary_interpolate{model}.csv')
+
+
+########## Accumulated Local Effects (ALE) for Interpolation ##########
+discrete_fts = ['# unique tokens',
+                'Min # tokens', 'Max # tokens', '# clusters',
+                '# classes']
+continuous_fts = ['Avg. # tokens', 'MD', 'FR', 
+                  'CHI', 'DBI', 'PMS', 'KTS', 
+                  'MR']
+
+pylab.rcParams['font.size'] = 27
+for i, ft in enumerate(discrete_fts):
+    fig = plt.figure(figsize=(10,7))
+    axis = fig.add_subplot()
+    ale_eff = ale(
+        X=ale_inter_x_test, model=ale_func_inter, feature=[ft], grid_size=50, 
+        feature_type='discrete' if ft in discrete_fts else 'continuous',
+        include_CI=False, fig=fig, ax=axis
+    )
+    xticks = axis.get_xticks()
+    if ft in ['# unique tokens','Max # tokens']:
+        axis.set_xticks(xticks[::9]) # set new tick positions
+        axis.tick_params(axis='x', rotation=30) # set tick rotation
+        axis.margins(x=0) # set tight margins
+    elif ft in ['Min # tokens']:
+        axis.set_xticks(xticks[::2]) # set new tick positions
+    print(f'{ft} :')
+    eff = list(ale_eff['eff'])
+    print(max(eff)-min(eff))
+    fig.tight_layout()
+    fig.savefig(f'image/interpret/ale/{ft.replace("#","num")}_inter{model}.png')
+    fig.show()
+    plt.show()
+
+for i, ft in enumerate(continuous_fts):
+    fig = plt.figure(figsize=(10,7))
+    axis = fig.add_subplot()
+    ale_eff = ale(
+        X=ale_inter_x_test, model=ale_func_inter, feature=[ft], grid_size=50, 
+        feature_type='discrete' if ft in discrete_fts else 'continuous',
+        include_CI=False, fig=fig, ax=axis
+    )
+    print(f'{ft} :')
+    eff = list(ale_eff['eff'])
+    print(max(eff)-min(eff))
+    fig.tight_layout()
+    fig.savefig(f'image/interpret/ale/{ft.replace("#","num")}_inter{model}.png')
+    fig.show()
+    plt.show()
+
 print('Finish')

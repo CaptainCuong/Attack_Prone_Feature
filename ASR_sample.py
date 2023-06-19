@@ -35,7 +35,7 @@ dataset_lst = {'amazon_review_full':5,
               }
 
 if __name__ == '__main__':
-    file = open("generated_data/data_test.csv", "a")
+    file = open(args.generated_data_file, "a")
     
     args.train_eval_sample = 'train'
     with open(f'generated_data/dataset_{args.chunk}.txt', 'r') as f:
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     train_data, test_data = load_dataset(args,train_index,test_index)
 
     # Train
-    if args.model in ['roberta-base','bert-base']:
+    if args.model in ['roberta-base','bert-base','distilroberta-base']:
         train_data, test_data = preprocess_huggingface(args, tokenizer, train_data, test_data)
         model = model.to(args.device)
         if args.load_checkpoint == 'True':

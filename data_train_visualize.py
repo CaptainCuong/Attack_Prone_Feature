@@ -4,7 +4,7 @@ import torch
 import matplotlib.pyplot as plt
 import numpy as np
 import hdbscan
-# from top2vec import Top2Vec
+import matplotlib.pylab as pylab
 from sklearn.preprocessing import normalize
 from utils import *
 from models import *
@@ -19,7 +19,7 @@ import time
 import umap
 import hdbscan
 
-args = parse_train_args()
+args = parse_train_args(visualize=True)
 args.device = 'cuda'if torch.cuda.is_available() else 'cpu'
 args.train_eval_sample = 'train'
 tokenizer = AutoTokenizer.from_pretrained('bert-base-cased',model_max_length=args.max_length)
@@ -27,12 +27,18 @@ embed_model = hub.load('https://tfhub.dev/google/universal-sentence-encoder/4')
 file = open("generated_data/data_test.csv", "a")
 # index = args.chunk
 # index=71
+pylab.rcParams['font.size'] = 25
 dataset_lst = {'amazon_review_full':5,
                'amazon_review_polarity':2,'dbpedia':14,
                'yahoo_answers':10,'ag_news':4,
-               'yelp_review_full':5,'yelp_review_polarity':2}
+               'yelp_review_full':5,'yelp_review_polarity':2,
+               'banking77__2':2, 'banking77__4':4, 'banking77__5':5, 
+               'banking77__10':10, 'banking77__14':14,
+               'tweet_eval_emoji_2':2, 'tweet_eval_emoji_4':4, 'tweet_eval_emoji_5':5, 
+               'tweet_eval_emoji_10':10, 'tweet_eval_emoji_14':14,
+              }
 
-for index in range(10,30):
+for index in range(0,30):
     with open(f'generated_data/dataset_{index}.txt', 'r') as f:
         dataset = f.read()
     args.dataset, args.number_of_class = dataset, dataset_lst[dataset]
@@ -49,13 +55,14 @@ for index in range(10,30):
         tokens += snt_tokens
         snt_len.append(len(snt_tokens))
 
+    ########### Number of tokens ###########
     plt.figure()
     plt.hist(snt_len,bins=100)
-    plt.suptitle(f'Distribution of the # of tokens in sentences in train data')
+    # plt.suptitle(f'Distribution of the # of tokens in sentences in train data')
     plt.ylabel('# of sentences')
-    plt.xlabel('# of tokens in each sentence')
-    plt.savefig(f'image/num_tokens/{index}.png')
-    # plt.show()
+    plt.xlabel('# of tokens')
+    plt.tight_layout()
+    plt.savefig(f'image/num_tokens/{args.dataset}_{index}_token.png')
     plt.close()
 
     ########### Embedding ###########
@@ -79,22 +86,22 @@ for index in range(10,30):
         clr = color[cluster.labels_[i]]
         x,y = umap_model.embedding_[i]
         plt.plot(x,y,color=clr,marker='o')
-    plt.savefig(f'image/embedding/{index}.png')
-    # plt.show()
+    plt.tight_layout()
+    plt.savefig(f'image/embedding/{args.dataset}_{index}_embedding.png')
     plt.close()
 
     ########### Distribution of labels ###########
     lb_dis = np.array([0 for i in range(dataset_lst[args.dataset])])
     unique, counts = np.unique(labels, return_counts=True)
     lb_dis[:counts.shape[0]] = counts
-
     plt.figure()
     plt.bar(range(lb_dis.shape[0]), lb_dis)
     # plt.plot(df['Year'], df['Sample Size'], '-o', color='orange')
     # plt.hist(labels)
-    plt.suptitle(f'Distribution of labels in train data')
-    plt.ylabel('Number of sentences')
-    plt.xlabel('Number of tokens in each sentence')
-    plt.savefig(f'image/lb_dis/{index}.png')
-    # plt.show() 
+    # plt.suptitle(f'Distribution of labels in train data')
+    plt.ylabel('# of sentences')
+    plt.xlabel('Label')
+    plt.tight_layout()
+    # plt.show()
+    plt.savefig(f'image/lb_dis/{args.dataset}_{index}_label.png')
     plt.close()

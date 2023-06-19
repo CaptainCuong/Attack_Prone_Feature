@@ -42,7 +42,7 @@ model, tokenizer = get_model(args)
 train_data, test_data = load_dataset(args,train_index,test_index) # Dataframe
 
 # Train
-if args.model in ['roberta-base','bert-base']:
+if args.model in ['roberta-base','bert-base','distilroberta-base']:
     train_data, test_data = preprocess_huggingface(args, tokenizer, train_data, test_data)
     model = model.to(args.device)
     if args.load_checkpoint == 'True':
