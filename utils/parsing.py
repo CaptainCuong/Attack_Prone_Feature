@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import distutils
 import os
 
 def parse_train_args(visualize=False):
@@ -9,6 +10,10 @@ def parse_train_args(visualize=False):
     parser.add_argument('--load_checkpoint', type=str, default='False', choices=['True','False'], help='Load a checkpoit')
     parser.add_argument('--limit_train', type=int, default=900, help='Number of samples for training set')
     parser.add_argument('--limit_test', type=int, default=100, help='Number of samples for testing set')
+    parser.add_argument('--custom_data', dest='custom_data', type=lambda x:bool(distutils.util.strtobool(x)), default=False,
+                                                             help='Add custom data to training data')
+    parser.add_argument('--custom_data_dir', type=str, default='datasets/custom_data.csv',
+                                             help='Directory for saving custom data')
     parser.add_argument('--dataset', type=str, default='yelp_review_polarity', 
                                                choices=['ag_news','amazon_review_full','amazon_review_polarity',
                                                         'dbpedia','imdb','yahoo_answers',

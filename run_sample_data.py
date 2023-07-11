@@ -67,14 +67,14 @@ Number of classes,ASR_TextFooler,ASR_PWWS,ASR_BERT,ASR_DeepWordBug\n')
     required_info = ['--sample', args.sample, 
                      '--start-end', str(args.start_end[0]), str(args.start_end[1]), 
                      '--generated-data-file', args.generated_data_file,
-                     '--model', args.model]
+                     '--model', args.model,
+                     '--custom_data', str(args.custom_data),
+                     '--custom_data_dir', args.custom_data_dir]
     for i in tqdm(range(start_sample, end_sample)):
-        # call(["python", "data_insight.py",'--chunk',f'{i}']+required_info)
+        if args.custom_data:
+            call(["python", "random_forest_verify.py",'--chunk',f'{i}']+required_info)
+        call(["python", "data_insight.py",'--chunk',f'{i}']+required_info)
         call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','TextFooler','PWWS']+required_info)
         call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','BERT','DeepWordBug']+required_info)
-        # call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','PWWS'])
-        # call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','BERT'])
-        # call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','DeepWordBug'])
-        # call(["python", "ASR_sample.py",'--chunk',f'{i}','--attack_type','TextFooler'])
         with open(args.generated_data_file, "a") as file:
             file.write('\n')

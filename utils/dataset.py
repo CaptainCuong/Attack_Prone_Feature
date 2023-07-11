@@ -1,7 +1,7 @@
 import pandas as pd
 from random import sample, shuffle
 
-def load_dataset(args, train_index=None, test_index=None):
+def load_dataset(args, train_index=None, test_index=None, custom_data=False):
     if args.train_eval_sample == 'train':
         assert train_index is not None and test_index is not None
     if args.train_eval_sample == 'eval':
@@ -131,7 +131,11 @@ def load_dataset(args, train_index=None, test_index=None):
     elif args.train_eval_sample == 'sample_attack':
         return sample(range(len(df_test[['label','text']][df_test.notnull().all(1)].index)),args.limit_test)
     elif args.train_eval_sample == 'train':
-        return df_train[['label','text']][df_train.notnull().all(1)].iloc[train_index].reset_index(drop=True),\
+        data_train = df_train[['label','text']][df_train.notnull().all(1)].iloc[train_index].reset_index(drop=True)
+        if custom_data:
+            data_add = pd.read_csv(args.custom_data_dir,index_col=False)
+            data_train = pd.concat([data_train, data_add]).reset_index(drop=True)
+        return data_train,\
            df_train[['label','text']][df_train.notnull().all(1)].iloc[test_index].reset_index(drop=True)
     elif args.train_eval_sample == 'eval':
         return df_test[['label','text']][df_test.notnull().all(1)].iloc[test_index].reset_index(drop=True)

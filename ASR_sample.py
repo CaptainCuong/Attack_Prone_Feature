@@ -44,7 +44,7 @@ if __name__ == '__main__':
     test_index = np.load(f'generated_data/test_index_{args.chunk}.npy')
     args.dataset, args.number_of_class = dataset, dataset_lst[dataset]
     model, tokenizer = get_model(args)
-    train_data, test_data = load_dataset(args,train_index,test_index)
+    train_data, test_data = load_dataset(args,train_index,test_index,args.custom_data)
 
     # Train
     if args.model in ['roberta-base','bert-base','distilroberta-base']:

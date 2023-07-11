@@ -41,7 +41,7 @@ with open(f'generated_data/dataset_{index}.txt','r') as f:
 
 test_index = np.load(f'generated_data/test_index_{index}.npy')
 train_index = np.load(f'generated_data/train_index_{index}.npy')
-train_data, test_data = load_dataset(args,train_index,test_index) # Dataframe
+train_data, test_data = load_dataset(args,train_index,test_index,args.custom_data) # Dataframe
 documents = train_data['text'].tolist() # list
 labels = train_data['label'].tolist() # list
 
